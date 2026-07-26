@@ -1,0 +1,465 @@
+{
+  "meta": {
+    "description": "Default seed data for the Pediatric Clerkship Scheduler, derived from Clerkship_Sites.xlsx. Community site availability/weeks/capacity should be re-confirmed by the coordinator each term in Step 2 of the wizard; PHM/PEM/Newborn structure and distances rarely change."
+  },
+  "phmSites": [
+    {
+      "id": "phm-main",
+      "name": "PHM Main Campus",
+      "distancePerDay": 0,
+      "daysPerWeek": 6,
+      "capacity": 10
+    },
+    {
+      "id": "phm-wc",
+      "name": "PHM West Campus (Katy)",
+      "distancePerDay": 25,
+      "daysPerWeek": 5,
+      "capacity": 2,
+      "note": "Ideally send 10 to main campus first, then any overflow to WC \u2014 but coordinator may adjust capacity per term (e.g. term 1 2026-27 accommodated 3)."
+    },
+    {
+      "id": "phm-christus",
+      "name": "PHM Christus Children's (San Antonio)",
+      "distancePerDay": 0,
+      "daysPerWeek": 0,
+      "capacity": null,
+      "note": "No commute distance \u2014 students live on-site. Capacity is opt-in / first-come-first-served, set by coordinator each term."
+    }
+  ],
+  "pemSites": [
+    {
+      "id": "pem-main",
+      "name": "PEM TCH Main Campus",
+      "distancePerDay": 0,
+      "daysPerWeek": 5,
+      "capacity": 4
+    },
+    {
+      "id": "pem-wc",
+      "name": "PEM West Campus (Katy)",
+      "distancePerDay": 25,
+      "daysAtSite": 4,
+      "daysAtMain": 1,
+      "capacity": 1,
+      "note": "4 days at West Campus + 1 day at Main Campus (fellow teaching), so weekly distance = 4\u00d7distancePerDay + 1\u00d70."
+    },
+    {
+      "id": "pem-woodlands",
+      "name": "PEM Woodlands",
+      "distancePerDay": 39,
+      "daysAtSite": 4,
+      "daysAtMain": 1,
+      "capacity": 1,
+      "note": "Same 4+1 day split as West Campus."
+    },
+    {
+      "id": "pem-christus",
+      "name": "PEM Christus Children's (San Antonio)",
+      "distancePerDay": 0,
+      "daysPerWeek": 0,
+      "capacity": null,
+      "note": "No commute distance \u2014 students live on-site."
+    }
+  ],
+  "newbornSites": [
+    {
+      "id": "newborn-tch",
+      "name": "TCH Newborn",
+      "distancePerDay": 0,
+      "capacity": 2,
+      "pairStudents": true
+    },
+    {
+      "id": "newborn-bt",
+      "name": "Ben Taub Newborn",
+      "distancePerDay": 0,
+      "capacity": 2,
+      "pairStudents": true
+    },
+    {
+      "id": "newborn-bt-nicu",
+      "name": "Ben Taub NICU",
+      "distancePerDay": 0,
+      "capacity": 2,
+      "pairStudents": true
+    }
+  ],
+  "communitySites": [
+    {
+      "name": "Blue Fish Pediatrics at Memorial",
+      "category": "Non-TCP Sites",
+      "distance": 14.6,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Nicholas E. Lindsay (Eric)"
+      ],
+      "id": "blue-fish-pediatrics-at-memorial",
+      "available": true
+    },
+    {
+      "name": "Cypress Health Center",
+      "category": "Non-TCP Sites",
+      "distance": 25.0,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Elizabeth Bosquez"
+      ],
+      "id": "cypress-health-center",
+      "available": true
+    },
+    {
+      "name": "Edgebrook Clinic",
+      "category": "Non-TCP Sites",
+      "distance": 14.8,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Maria del Carmen Espinoza"
+      ],
+      "id": "edgebrook-clinic",
+      "available": true
+    },
+    {
+      "name": "Pearland Pediatrics",
+      "category": "Non-TCP Sites",
+      "distance": 20.9,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Jason Decker"
+      ],
+      "id": "pearland-pediatrics",
+      "available": true
+    },
+    {
+      "name": "Pure Pediatrics - Bellaire & River Oaks",
+      "category": "Non-TCP Sites",
+      "distance": 4.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Alana Kennedy-Nasser"
+      ],
+      "id": "pure-pediatrics---bellaire-&-river-oaks",
+      "available": true
+    },
+    {
+      "name": "Pure Pediatrics - Memorial",
+      "category": "Non-TCP Sites",
+      "distance": 11.0,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Sara Curtis"
+      ],
+      "id": "pure-pediatrics---memorial",
+      "available": true
+    },
+    {
+      "name": "Pure Pediatrics - River Oaks",
+      "category": "Non-TCP Sites",
+      "distance": 3.6,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Alexander Injac"
+      ],
+      "id": "pure-pediatrics---river-oaks",
+      "available": true
+    },
+    {
+      "name": "Texas Family Pediatric Group",
+      "category": "Non-TCP Sites",
+      "distance": 24.5,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Disha Saharia",
+        "Dr. Sangeeta Agrawala (backup)"
+      ],
+      "id": "texas-family-pediatric-group",
+      "available": true
+    },
+    {
+      "name": "TCP Barker Cypress",
+      "category": "TCP Sites",
+      "distance": 31.8,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Jamie Chu"
+      ],
+      "id": "tcp-barker-cypress",
+      "available": true
+    },
+    {
+      "name": "TCP Beansprout (Dripping Springs, TX)",
+      "category": "TCP Sites",
+      "distance": 0.0,
+      "isSubspecialty": false,
+      "isAustin": true,
+      "preceptors": [
+        "Dr. Samantha Dahlberg"
+      ],
+      "id": "tcp-beansprout-dripping-springs,-tx",
+      "available": true
+    },
+    {
+      "name": "TCP Braeswood (previously Green Park)",
+      "category": "TCP Sites",
+      "distance": 1.4,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Shannon Hayes",
+        "Dr. Beverly Lee (backup)"
+      ],
+      "id": "tcp-braeswood-previously-green-park",
+      "available": true
+    },
+    {
+      "name": "TCP Corinthian Pointe",
+      "category": "TCP Sites",
+      "distance": 7.9,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Shang Chen Wu (Allison)",
+        "Dr. Rabia Nagda",
+        "Dr. Christianah Ogunleye"
+      ],
+      "id": "tcp-corinthian-pointe",
+      "available": true
+    },
+    {
+      "name": "TCP Cypress",
+      "category": "TCP Sites",
+      "distance": 31.7,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Alyssa Kuban",
+        "Dr. Allison Arthur"
+      ],
+      "id": "tcp-cypress",
+      "available": true
+    },
+    {
+      "name": "TCP Gulfgate",
+      "category": "TCP Sites",
+      "distance": 9.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Susan Khandelwal"
+      ],
+      "id": "tcp-gulfgate",
+      "available": true
+    },
+    {
+      "name": "TCP Gulfton",
+      "category": "TCP Sites",
+      "distance": 8.3,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Jessie Zhao"
+      ],
+      "id": "tcp-gulfton",
+      "available": true
+    },
+    {
+      "name": "TCP Heights",
+      "category": "TCP Sites",
+      "distance": 7.3,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Caitlin F. Carroll"
+      ],
+      "id": "tcp-heights",
+      "available": true
+    },
+    {
+      "name": "TCP Hill Country Pediatrics (Austin)",
+      "category": "TCP Sites",
+      "distance": 0.0,
+      "isSubspecialty": false,
+      "isAustin": true,
+      "preceptors": [
+        "Dr. Gabriella T. Gonzales"
+      ],
+      "id": "tcp-hill-country-pediatrics-austin",
+      "available": true
+    },
+    {
+      "name": "TCP Katy",
+      "category": "TCP Sites",
+      "distance": 27.2,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Diana R. Schulz"
+      ],
+      "id": "tcp-katy",
+      "available": true
+    },
+    {
+      "name": "TCP Pearland",
+      "category": "TCP Sites",
+      "distance": 13.8,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Matthew Wilber",
+        "Dr. Laura Anderson"
+      ],
+      "id": "tcp-pearland",
+      "available": true
+    },
+    {
+      "name": "TCP Shadow Creek Ranch",
+      "category": "TCP Sites",
+      "distance": 12.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Wendy Valicek",
+        "Dr. Deborah Davis",
+        "Dr. Maggie Jimenez",
+        "Dr. Anna E. Rueda"
+      ],
+      "id": "tcp-shadow-creek-ranch",
+      "available": true
+    },
+    {
+      "name": "TCP Spring Branch",
+      "category": "TCP Sites",
+      "distance": 13.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Zabeen Noorani"
+      ],
+      "id": "tcp-spring-branch",
+      "available": true
+    },
+    {
+      "name": "TCP Sugar Land",
+      "category": "TCP Sites",
+      "distance": 20.0,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Amina Husain"
+      ],
+      "id": "tcp-sugar-land",
+      "available": true
+    },
+    {
+      "name": "Harris Health Pasadena",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 18.0,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Betty Del Rio Rodriguez",
+        "Dr. Griselda Meza",
+        "Dr. Ana Monterrey (backup only)"
+      ],
+      "id": "harris-health-pasadena",
+      "available": true
+    },
+    {
+      "name": "TCH Primary Care Practice at Palm Center",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 7.3,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Teresa Duryea"
+      ],
+      "id": "tch-primary-care-practice-at-palm-center",
+      "available": true
+    },
+    {
+      "name": "TCH Mobile Clinic Program",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 15.0,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Sanghamitra Misra",
+        "Dr. Aditi Gupta"
+      ],
+      "id": "tch-mobile-clinic-program",
+      "available": true
+    },
+    {
+      "name": "TCP Westwood",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 13.7,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Stephanie Marton",
+        "Dr. Neel Naik"
+      ],
+      "id": "tcp-westwood",
+      "available": true
+    },
+    {
+      "name": "TCH Rheumatology",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 0.0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "Miriah Gillispie-Taylor"
+      ],
+      "id": "tch-rheumatology",
+      "available": true
+    },
+    {
+      "name": "TCH Gastroenterology",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 0.0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "Amy Issa",
+        "Anna Banc-Husu"
+      ],
+      "id": "tch-gastroenterology",
+      "available": true
+    },
+    {
+      "name": "TCH Pulmonary",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 0.0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "Shailendra Das (back up)",
+        "David Moreno (main contact)"
+      ],
+      "id": "tch-pulmonary",
+      "available": true
+    },
+    {
+      "name": "TCH Woodlands (ID)",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 39.0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "Ankhi Dutta"
+      ],
+      "id": "tch-woodlands-id",
+      "available": true
+    }
+  ]
+}
