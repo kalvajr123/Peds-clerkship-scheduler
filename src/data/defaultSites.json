@@ -345,7 +345,70 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "Texas Family Pediatric Group — Dr. Disha Saharia",
+      "category": "Non-TCP Sites",
+      "distance": 24.5,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Disha Saharia"
+      ],
+      "id": "texas-family-pediatric-group--dr-disha-saharia",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "texas-family-pediatric-group"
+    },
+    {
+      "name": "Texas Family Pediatric Group — Dr. Sangeeta Agrawala (backup)",
+      "category": "Non-TCP Sites",
+      "distance": 24.5,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Sangeeta Agrawala (backup)"
+      ],
+      "id": "texas-family-pediatric-group--dr-sangeeta-agrawala-backup",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": true,
+      "splitFromId": "texas-family-pediatric-group"
     },
     {
       "name": "TCP Barker Cypress",
@@ -433,7 +496,70 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCP Braeswood (previously Green Park) — Dr. Shannon Hayes",
+      "category": "TCP Sites",
+      "distance": 1.4,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Shannon Hayes"
+      ],
+      "id": "tcp-braeswood-previously-green-park--dr-shannon-hayes",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-braeswood-previously-green-park"
+    },
+    {
+      "name": "TCP Braeswood (previously Green Park) — Dr. Beverly Lee (backup)",
+      "category": "TCP Sites",
+      "distance": 1.4,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Beverly Lee (backup)"
+      ],
+      "id": "tcp-braeswood-previously-green-park--dr-beverly-lee-backup",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": true,
+      "splitFromId": "tcp-braeswood-previously-green-park"
     },
     {
       "name": "TCP Corinthian Pointe",
@@ -464,7 +590,101 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCP Corinthian Pointe — Dr. Shang Chen Wu (Allison)",
+      "category": "TCP Sites",
+      "distance": 7.9,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Shang Chen Wu (Allison)"
+      ],
+      "id": "tcp-corinthian-pointe--dr-shang-chen-wu-allison",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-corinthian-pointe"
+    },
+    {
+      "name": "TCP Corinthian Pointe — Dr. Rabia Nagda",
+      "category": "TCP Sites",
+      "distance": 7.9,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Rabia Nagda"
+      ],
+      "id": "tcp-corinthian-pointe--dr-rabia-nagda",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-corinthian-pointe"
+    },
+    {
+      "name": "TCP Corinthian Pointe — Dr. Christianah Ogunleye",
+      "category": "TCP Sites",
+      "distance": 7.9,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Christianah Ogunleye"
+      ],
+      "id": "tcp-corinthian-pointe--dr-christianah-ogunleye",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-corinthian-pointe"
     },
     {
       "name": "TCP Cypress",
@@ -494,7 +714,70 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCP Cypress — Dr. Alyssa Kuban",
+      "category": "TCP Sites",
+      "distance": 31.7,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Alyssa Kuban"
+      ],
+      "id": "tcp-cypress--dr-alyssa-kuban",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-cypress"
+    },
+    {
+      "name": "TCP Cypress — Dr. Allison Arthur",
+      "category": "TCP Sites",
+      "distance": 31.7,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Allison Arthur"
+      ],
+      "id": "tcp-cypress--dr-allison-arthur",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-cypress"
     },
     {
       "name": "TCP Gulfgate",
@@ -669,7 +952,70 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCP Pearland — Dr. Matthew Wilber",
+      "category": "TCP Sites",
+      "distance": 13.8,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Matthew Wilber"
+      ],
+      "id": "tcp-pearland--dr-matthew-wilber",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-pearland"
+    },
+    {
+      "name": "TCP Pearland — Dr. Laura Anderson",
+      "category": "TCP Sites",
+      "distance": 13.8,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Laura Anderson"
+      ],
+      "id": "tcp-pearland--dr-laura-anderson",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-pearland"
     },
     {
       "name": "TCP Shadow Creek Ranch",
@@ -701,7 +1047,132 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCP Shadow Creek Ranch — Dr. Wendy Valicek",
+      "category": "TCP Sites",
+      "distance": 12.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Wendy Valicek"
+      ],
+      "id": "tcp-shadow-creek-ranch--dr-wendy-valicek",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-shadow-creek-ranch"
+    },
+    {
+      "name": "TCP Shadow Creek Ranch — Dr. Deborah Davis",
+      "category": "TCP Sites",
+      "distance": 12.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Deborah Davis"
+      ],
+      "id": "tcp-shadow-creek-ranch--dr-deborah-davis",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-shadow-creek-ranch"
+    },
+    {
+      "name": "TCP Shadow Creek Ranch — Dr. Maggie Jimenez",
+      "category": "TCP Sites",
+      "distance": 12.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Maggie Jimenez"
+      ],
+      "id": "tcp-shadow-creek-ranch--dr-maggie-jimenez",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-shadow-creek-ranch"
+    },
+    {
+      "name": "TCP Shadow Creek Ranch — Dr. Anna E. Rueda",
+      "category": "TCP Sites",
+      "distance": 12.1,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Anna E. Rueda"
+      ],
+      "id": "tcp-shadow-creek-ranch--dr-anna-e-rueda",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-shadow-creek-ranch"
     },
     {
       "name": "TCP Spring Branch",
@@ -790,7 +1261,101 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "Harris Health Pasadena — Dr. Betty Del Rio Rodriguez",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 18,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Betty Del Rio Rodriguez"
+      ],
+      "id": "harris-health-pasadena--dr-betty-del-rio-rodriguez",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "harris-health-pasadena"
+    },
+    {
+      "name": "Harris Health Pasadena — Dr. Griselda Meza",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 18,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Griselda Meza"
+      ],
+      "id": "harris-health-pasadena--dr-griselda-meza",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "harris-health-pasadena"
+    },
+    {
+      "name": "Harris Health Pasadena — Dr. Ana Monterrey (backup only)",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 18,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Ana Monterrey (backup only)"
+      ],
+      "id": "harris-health-pasadena--dr-ana-monterrey-backup-only",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": true,
+      "splitFromId": "harris-health-pasadena"
     },
     {
       "name": "TCH Primary Care Practice at Palm Center",
@@ -879,7 +1444,70 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCP Westwood — Dr. Stephanie Marton",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 13.7,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Stephanie Marton"
+      ],
+      "id": "tcp-westwood--dr-stephanie-marton",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-westwood"
+    },
+    {
+      "name": "TCP Westwood — Dr. Neel Naik",
+      "category": "BCM Academic Gen Peds Sites",
+      "distance": 13.7,
+      "isSubspecialty": false,
+      "isAustin": false,
+      "preceptors": [
+        "Dr. Neel Naik"
+      ],
+      "id": "tcp-westwood--dr-neel-naik",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tcp-westwood"
     },
     {
       "name": "TCH Rheumatology",
@@ -938,7 +1566,70 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCH Gastroenterology — Amy Issa",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "Amy Issa"
+      ],
+      "id": "tch-gastroenterology--amy-issa",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tch-gastroenterology"
+    },
+    {
+      "name": "TCH Gastroenterology — Anna Banc-Husu",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "Anna Banc-Husu"
+      ],
+      "id": "tch-gastroenterology--anna-banc-husu",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tch-gastroenterology"
     },
     {
       "name": "TCH Pulmonary",
@@ -968,7 +1659,70 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
+    },
+    {
+      "name": "TCH Pulmonary — David Moreno (main contact)",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "David Moreno (main contact)"
+      ],
+      "id": "tch-pulmonary--david-moreno-main-contact",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": false,
+      "splitFromId": "tch-pulmonary"
+    },
+    {
+      "name": "TCH Pulmonary — Shailendra Das (back up)",
+      "category": "BCM Peds Sub-Specialty Sites",
+      "distance": 0,
+      "isSubspecialty": true,
+      "isAustin": false,
+      "preceptors": [
+        "Shailendra Das (back up)"
+      ],
+      "id": "tch-pulmonary--shailendra-das-back-up",
+      "available": true,
+      "requiresSpanish": false,
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      },
+      "isBackupPreceptor": true,
+      "splitFromId": "tch-pulmonary"
     },
     {
       "name": "TCH Woodlands (ID)",

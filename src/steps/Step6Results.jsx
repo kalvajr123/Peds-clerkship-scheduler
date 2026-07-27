@@ -69,6 +69,15 @@ function ScheduleTab() {
 
   return (
     <div>
+      {schedule.unfilledCount > 0 && (
+        <div className="panel">
+          <div className="badge badge--danger" style={{ display: 'block' }}>
+            {schedule.unfilledCount} slot(s) could not be filled automatically (site capacity was
+            exhausted) — look for "UNFILLED" cells below and assign them manually via a lock or an
+            inline override.
+          </div>
+        </div>
+      )}
       {schedule.overflow.length > 0 && (
         <div className="panel">
           <h3 style={{ marginTop: 0 }}>Requested but not assigned — needs coordinator follow-up</h3>

@@ -136,6 +136,7 @@ function CommunityTable() {
   const [filter, setFilter] = useState('');
   const [newSiteName, setNewSiteName] = useState('');
   const [newSiteDistance, setNewSiteDistance] = useState(0);
+  const [newSitePreceptor, setNewSitePreceptor] = useState('');
 
   const update = (siteId, patch) => dispatch({ type: 'UPDATE_SITE', pool: 'community', siteId, patch });
 
@@ -154,24 +155,28 @@ function CommunityTable() {
     const q = filter.trim().toLowerCase();
     if (!q) return state.sites.community;
     return state.sites.community.filter(
-      (s) => s.name.toLowerCase().includes(q) || (s.category || '').toLowerCase().includes(q)
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        (s.category || '').toLowerCase().includes(q) ||
+        (s.preceptors || []).some((p) => p.toLowerCase().includes(q))
     );
   }, [state.sites.community, filter]);
 
   const handleAddSite = () => {
     if (!newSiteName.trim()) return;
     const id = `custom-${Date.now()}`;
+    const preceptor = newSitePreceptor.trim();
     dispatch({
       type: 'ADD_COMMUNITY_SITE',
       site: {
         id,
-        name: newSiteName.trim(),
+        name: preceptor ? `${newSiteName.trim()} — ${preceptor}` : newSiteName.trim(),
         category: 'Custom',
         distance: Number(newSiteDistance) || 0,
         isSubspecialty: false,
         isAustin: false,
         requiresSpanish: false,
-        preceptors: [],
+        preceptors: preceptor ? [preceptor] : [],
         available: true,
         weeksOpen: [1, 2, 3, 4, 5, 6],
         capacityByWeek: { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1 },
@@ -179,6 +184,7 @@ function CommunityTable() {
     });
     setNewSiteName('');
     setNewSiteDistance(0);
+    setNewSitePreceptor('');
   };
 
   return (
@@ -186,7 +192,7 @@ function CommunityTable() {
       <div className="row" style={{ marginBottom: 8 }}>
         <input
           type="text"
-          placeholder="Filter sites by name/category..."
+          placeholder="Filter sites by name/category/doctor..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           style={{ width: 260 }}
@@ -287,6 +293,13 @@ function CommunityTable() {
           onChange={(e) => setNewSiteName(e.target.value)}
         />
         <input
+          type="text"
+          placeholder="Doctor name (optional)"
+          value={newSitePreceptor}
+          onChange={(e) => setNewSitePreceptor(e.target.value)}
+          style={{ width: 200 }}
+        />
+        <input
           type="number"
           placeholder="Distance"
           value={newSiteDistance}
@@ -295,6 +308,11 @@ function CommunityTable() {
         />
         <button onClick={handleAddSite}>Add community site</button>
       </div>
+      <p className="muted">
+        Adding a doctor name creates a separately schedulable row for that specific doctor (e.g. to
+        add another doctor at an existing site, add it again with the same site name and a
+        different doctor).
+      </p>
     </div>
   );
 }

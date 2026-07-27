@@ -2,12 +2,15 @@
 // section. Runs entirely client-side.
 //
 // Term-structure assumption (confirmed with the coordinator): every
-// student spends 2 weeks in PHM (one contiguous block, one site), 1 week
-// in PEM (one site), 2 individual weeks in Community (each week can be a
-// different site), and 1 leftover week in Newborn (filler, distance 0).
-// The algorithm itself chooses BOTH which absolute weeks (1-6) each
-// rotation type falls on for a given student, AND which site fills each
-// slot.
+// student spends 2 weeks in PHM (one CONTIGUOUS block, one site), 1 week
+// in PEM (one site), 2 individual weeks in Community (also a CONTIGUOUS
+// block — different site allowed per week, e.g. a 1-week subspecialty
+// followed immediately by a regular community week), and 1 leftover week
+// in Newborn (filler, distance 0). PHM and Community blocks don't need to
+// be adjacent to each other or in any particular order relative to PEM/
+// Newborn — only each block's own 2 weeks need to be back-to-back. The
+// algorithm itself chooses BOTH which absolute weeks (1-6) each rotation
+// type falls on for a given student, AND which site fills each slot.
 
 const ALL_WEEKS = [1, 2, 3, 4, 5, 6];
 
@@ -15,29 +18,28 @@ const ALL_WEEKS = [1, 2, 3, 4, 5, 6];
 // Week-timing templates
 // ---------------------------------------------------------------------
 
-function combinations2(arr) {
-  const out = [];
-  for (let i = 0; i < arr.length; i++) {
-    for (let j = i + 1; j < arr.length; j++) {
-      out.push([arr[i], arr[j]]);
-    }
-  }
-  return out;
+function contiguousPairs() {
+  const pairs = [];
+  for (let w = 1; w <= 5; w++) pairs.push([w, w + 1]);
+  return pairs;
 }
 
-/** All valid (phmWeeks, pemWeek, communityWeeks, newbornWeek) templates. */
+/**
+ * All valid (phmWeeks, communityWeeks, pemWeek, newbornWeek) templates:
+ * PHM and Community are each a contiguous 2-week block, disjoint from
+ * each other; the 2 weeks left over split between PEM and Newborn (both
+ * orderings, since neither has an adjacency requirement).
+ */
 export function buildWeekTemplates() {
   const templates = [];
-  for (let s = 1; s <= 5; s++) {
-    const phmWeeks = [s, s + 1];
-    const afterPhm = ALL_WEEKS.filter((w) => !phmWeeks.includes(w));
-    for (const p of afterPhm) {
-      const afterPem = afterPhm.filter((w) => w !== p);
-      for (const combo of combinations2(afterPem)) {
-        const communityWeeks = [...combo].sort((a, b) => a - b);
-        const newbornWeek = afterPem.find((w) => !communityWeeks.includes(w));
-        templates.push({ phmWeeks, pemWeek: p, communityWeeks, newbornWeek });
-      }
+  const pairs = contiguousPairs();
+  for (const phmWeeks of pairs) {
+    for (const communityWeeks of pairs) {
+      if (communityWeeks.some((w) => phmWeeks.includes(w))) continue;
+      const used = new Set([...phmWeeks, ...communityWeeks]);
+      const remaining = ALL_WEEKS.filter((w) => !used.has(w));
+      templates.push({ phmWeeks, communityWeeks, pemWeek: remaining[0], newbornWeek: remaining[1] });
+      templates.push({ phmWeeks, communityWeeks, pemWeek: remaining[1], newbornWeek: remaining[0] });
     }
   }
   return templates;
@@ -97,6 +99,22 @@ function capacityOf(site, week, rotationType) {
     return site.capacityByWeek?.[week] ?? 0;
   }
   return site.capacity == null ? Infinity : site.capacity;
+}
+
+// Christus and Austin sites are opt-in only: reachable exclusively via an
+// explicit hard-preference request (Step A) or a manual lock (Step B),
+// never picked automatically by greedy-fill or touched by local search.
+function isOptInOnly(site) {
+  return site.id === 'phm-christus' || site.id === 'pem-christus' || site.id === 'christus-community' || !!site.isAustin;
+}
+
+function autoFillPools(sitePools) {
+  return {
+    phm: sitePools.phm.filter((s) => !isOptInOnly(s)),
+    pem: sitePools.pem.filter((s) => !isOptInOnly(s)),
+    community: sitePools.community.filter((s) => !isOptInOnly(s)),
+    newborn: sitePools.newborn,
+  };
 }
 
 function normalizeSites(sitesState) {
@@ -343,7 +361,7 @@ function greedyFillPHM({ studentIds, templates, sitePools, occupancy, assignment
       open = open.slice(1);
       continue;
     }
-    eligible.sort((a, b) => b.weeklyDistance - a.weeklyDistance);
+    eligible.sort((a, b) => a.weeklyDistance - b.weeklyDistance);
     const site = eligible[0];
     weeks.forEach((w) => occupancy.inc('phm', site.id, w));
     assignments[studentId].phm = { weeks, siteId: site.id, locked: false };
@@ -363,7 +381,7 @@ function greedyFillPEM({ studentIds, templates, sitePools, occupancy, assignment
       open = open.slice(1);
       continue;
     }
-    eligible.sort((a, b) => b.weeklyDistance - a.weeklyDistance);
+    eligible.sort((a, b) => a.weeklyDistance - b.weeklyDistance);
     const site = eligible[0];
     occupancy.inc('pem', site.id, week);
     assignments[studentId].pem = { week, siteId: site.id, locked: false };
@@ -410,7 +428,7 @@ function greedyFillCommunity({
       open = open.slice(1);
       continue;
     }
-    eligible.sort((x, y) => y.weeklyDistance - x.weeklyDistance);
+    eligible.sort((x, y) => x.weeklyDistance - y.weeklyDistance);
     const site = eligible[0];
     occupancy.inc('community', site.id, week);
     a.community[ordinal] = {
@@ -656,9 +674,10 @@ function runOneAttempt({ studentIds, preferences, locks, sitePools, rng }) {
     mileage[id] = total;
   });
 
-  greedyFillPHM({ studentIds, templates, sitePools, occupancy, assignments, mileage, rng });
-  greedyFillPEM({ studentIds, templates, sitePools, occupancy, assignments, mileage, rng });
-  greedyFillCommunity({ studentIds, templates, sitePools, occupancy, assignments, mileage, preferences, rng });
+  const autoPools = autoFillPools(sitePools);
+  greedyFillPHM({ studentIds, templates, sitePools: autoPools, occupancy, assignments, mileage, rng });
+  greedyFillPEM({ studentIds, templates, sitePools: autoPools, occupancy, assignments, mileage, rng });
+  greedyFillCommunity({ studentIds, templates, sitePools: autoPools, occupancy, assignments, mileage, preferences, rng });
 
   localSearchPHM({ studentIds, sitePools, occupancy, assignments, mileage });
   localSearchPEM({ studentIds, sitePools, occupancy, assignments, mileage });
@@ -680,7 +699,30 @@ function runOneAttempt({ studentIds, preferences, locks, sitePools, rng }) {
   const sumSq = studentIds.reduce((s, id) => s + mileage[id] ** 2, 0);
   const varianceValue = n ? variance(sum, sumSq, n) : 0;
 
-  return { templates, assignments, mileage, overflow, variance: varianceValue };
+  const unfilledCount = studentIds.reduce((count, id) => {
+    const a = assignments[id];
+    let missing = 0;
+    if (!a.phm) missing++;
+    if (!a.pem) missing++;
+    if (!a.community[0]) missing++;
+    if (!a.community[1]) missing++;
+    if (!a.newborn) missing++;
+    return count + missing;
+  }, 0);
+
+  return { templates, assignments, mileage, overflow, variance: varianceValue, sum, unfilledCount };
+}
+
+/** Fewer unfilled slots wins; then lower total miles; then lower variance. */
+function isBetterAttempt(candidate, current) {
+  if (!current) return true;
+  if (candidate.unfilledCount !== current.unfilledCount) {
+    return candidate.unfilledCount < current.unfilledCount;
+  }
+  if (candidate.sum !== current.sum) {
+    return candidate.sum < current.sum;
+  }
+  return candidate.variance < current.variance;
 }
 
 // ---------------------------------------------------------------------
@@ -704,7 +746,7 @@ export async function runScheduler({
   for (let i = 0; i < restarts; i++) {
     const rng = mulberry32(Date.now() % 1e9 + i * 7919);
     const attempt = runOneAttempt({ studentIds, preferences, locks, sitePools, rng });
-    if (!best || attempt.variance < best.variance) {
+    if (isBetterAttempt(attempt, best)) {
       best = attempt;
     }
     if (i % chunkSize === 0) {
@@ -718,6 +760,8 @@ export async function runScheduler({
   return buildResult(best, studentIds, sitePools);
 }
 
+const UNFILLED_CELL = { rotation: 'Unfilled', siteId: null, siteName: 'UNFILLED — needs manual assignment', distance: 0 };
+
 function buildResult(best, studentIds, sitePools) {
   const { templates, assignments, mileage, overflow } = best;
 
@@ -728,21 +772,32 @@ function buildResult(best, studentIds, sitePools) {
     const a = assignments[id];
     const row = {};
     tmpl.phmWeeks.forEach((w) => {
-      const site = findSite(sitePools.phm, a.phm.siteId);
-      row[w] = { rotation: 'PHM', siteId: site.id, siteName: site.name, distance: site.weeklyDistance };
+      const site = a.phm && findSite(sitePools.phm, a.phm.siteId);
+      row[w] = site
+        ? { rotation: 'PHM', siteId: site.id, siteName: site.name, distance: site.weeklyDistance }
+        : UNFILLED_CELL;
     });
     row[tmpl.pemWeek] = (() => {
-      const site = findSite(sitePools.pem, a.pem.siteId);
-      return { rotation: 'PEM', siteId: site.id, siteName: site.name, distance: site.weeklyDistance };
+      const site = a.pem && findSite(sitePools.pem, a.pem.siteId);
+      return site
+        ? { rotation: 'PEM', siteId: site.id, siteName: site.name, distance: site.weeklyDistance }
+        : UNFILLED_CELL;
     })();
     a.community.forEach((c) => {
+      if (!c) return;
       const site = findSite(sitePools.community, c.siteId);
       row[c.week] = { rotation: 'Community', siteId: site.id, siteName: site.name, distance: site.weeklyDistance };
     });
     row[tmpl.newbornWeek] = (() => {
-      const site = findSite(sitePools.newborn, a.newborn.siteId);
-      return { rotation: 'Newborn', siteId: site.id, siteName: site.name, distance: 0 };
+      const site = a.newborn && findSite(sitePools.newborn, a.newborn.siteId);
+      return site
+        ? { rotation: 'Newborn', siteId: site.id, siteName: site.name, distance: 0 }
+        : UNFILLED_CELL;
     })();
+    // Any community ordinal that never got assigned still needs a visible cell.
+    tmpl.communityWeeks.forEach((w) => {
+      if (!row[w]) row[w] = UNFILLED_CELL;
+    });
     weekly[id] = row;
   });
 
@@ -773,6 +828,7 @@ function buildResult(best, studentIds, sitePools) {
     std,
     overflow,
     variance: best.variance,
+    unfilledCount: best.unfilledCount,
   };
 }
 
