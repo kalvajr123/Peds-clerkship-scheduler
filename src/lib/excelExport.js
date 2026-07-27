@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import * as CFB from 'cfb';
+import { buildDisplayNames } from './csv';
 
 // SheetJS's community edition can write cell values/formulas but not cell
 // fills or native Excel conditional-formatting rules (that's a Pro-only
@@ -81,8 +82,8 @@ function injectOutlierConditionalFormatting(workbookArrayBuffer, { sheetName, fl
   return toUint8(out);
 }
 
-function buildTermDistancesSheet(roster, weekly) {
-  const header = ['Student ID'];
+function buildTermDistancesSheet(roster, weekly, displayNames) {
+  const header = ['Student Name'];
   for (let w = 1; w <= 6; w++) {
     header.push(`W${w} Site`, `W${w} Distance`);
   }
@@ -90,7 +91,7 @@ function buildTermDistancesSheet(roster, weekly) {
 
   const rows = [header];
   roster.forEach((student) => {
-    const row = [student.id];
+    const row = [displayNames[student.id] || student.name];
     for (let w = 1; w <= 6; w++) {
       const cell = weekly[student.id]?.[w];
       row.push(cell ? cell.siteName : '', cell ? cell.distance : 0);
@@ -110,37 +111,30 @@ function buildTermDistancesSheet(roster, weekly) {
   return ws;
 }
 
-function buildStudentKeySheet(roster) {
-  const rows = [['Student ID', 'Student Name'], ...roster.map((s) => [s.id, s.name])];
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{ wch: 12 }, { wch: 28 }];
-  return ws;
-}
-
-function buildMileageSummarySheet(roster, mileage, rank, zScore, threshold) {
-  const rows = [['Student ID', 'Total Distance', 'Rank', 'Z-Score', 'Flag']];
+function buildMileageSummarySheet(roster, mileage, rank, zScore, threshold, displayNames) {
+  const rows = [['Student Name', 'Total Distance', 'Rank', 'Z-Score', 'Flag']];
   roster.forEach((s) => {
     const z = zScore[s.id];
     let flag = '';
     if (z > threshold) flag = 'HIGH';
     else if (z < -threshold) flag = 'LOW';
-    rows.push([s.id, Math.round(mileage[s.id] * 10) / 10, rank[s.id], Number(z.toFixed(2)), flag]);
+    rows.push([displayNames[s.id] || s.name, Math.round(mileage[s.id] * 10) / 10, rank[s.id], Number(z.toFixed(2)), flag]);
   });
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 8 }, { wch: 10 }, { wch: 8 }];
+  ws['!cols'] = [{ wch: 22 }, { wch: 14 }, { wch: 8 }, { wch: 10 }, { wch: 8 }];
   return ws;
 }
 
 /**
- * Builds and triggers a download of the results workbook: Term Distances,
- * Student Key, Mileage Summary (with red/yellow outlier conditional
- * formatting), matching the spec's Results export format.
+ * Builds and triggers a download of the results workbook: Term Distances
+ * and Mileage Summary (with red/yellow outlier conditional formatting),
+ * matching the spec's Results export format.
  */
 export function exportResultsToExcel({ roster, weekly, mileage, rank, zScore, threshold = 1.5, fileName = 'clerkship_schedule.xlsx' }) {
+  const displayNames = buildDisplayNames(roster);
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, buildTermDistancesSheet(roster, weekly), 'Term Distances');
-  XLSX.utils.book_append_sheet(wb, buildStudentKeySheet(roster), 'Student Key');
-  XLSX.utils.book_append_sheet(wb, buildMileageSummarySheet(roster, mileage, rank, zScore, threshold), 'Mileage Summary');
+  XLSX.utils.book_append_sheet(wb, buildTermDistancesSheet(roster, weekly, displayNames), 'Term Distances');
+  XLSX.utils.book_append_sheet(wb, buildMileageSummarySheet(roster, mileage, rank, zScore, threshold, displayNames), 'Mileage Summary');
 
   const arrayBuffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
   const patched = injectOutlierConditionalFormatting(arrayBuffer, {

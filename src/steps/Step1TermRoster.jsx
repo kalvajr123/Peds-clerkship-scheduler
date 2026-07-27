@@ -85,9 +85,7 @@ export default function Step1TermRoster() {
             placeholder={'Jane Doe\nJohn Smith\n...'}
           />
         </div>
-        {state.roster.length > 0 && (
-          <p className="muted">{state.roster.length} students loaded (IDs S1–S{state.roster.length}).</p>
-        )}
+        {state.roster.length > 0 && <p className="muted">{state.roster.length} students loaded.</p>}
       </div>
 
       <div className="actions">

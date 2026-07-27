@@ -26,7 +26,34 @@ export function parseRosterTextarea(text) {
     .filter(Boolean);
 }
 
-/** Assigns anonymized sequential IDs (S1, S2, ...) in upload order. */
+/**
+ * Assigns internal sequential IDs (S1, S2, ...) in upload order. These are
+ * used only as stable internal keys (state/lock references) — the UI and
+ * exports show the student's real name, not this ID.
+ */
 export function assignStudentIds(names) {
   return names.map((name, i) => ({ id: `S${i + 1}`, name }));
+}
+
+/**
+ * Builds a collision-safe display-name map ({studentId: displayName}). Two
+ * students with the same name get " (1)" / " (2)" suffixes; everyone else
+ * just gets their plain name.
+ */
+export function buildDisplayNames(roster) {
+  const counts = {};
+  roster.forEach((s) => {
+    counts[s.name] = (counts[s.name] || 0) + 1;
+  });
+  const seen = {};
+  const map = {};
+  roster.forEach((s) => {
+    if (counts[s.name] > 1) {
+      seen[s.name] = (seen[s.name] || 0) + 1;
+      map[s.id] = `${s.name} (${seen[s.name]})`;
+    } else {
+      map[s.id] = s.name;
+    }
+  });
+  return map;
 }

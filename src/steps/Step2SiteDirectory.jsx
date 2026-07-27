@@ -130,6 +130,64 @@ function NewbornTable() {
   );
 }
 
+function CommunitySiteRow({ s, isSubRow, update, toggleWeek, setCapacity, onRemove }) {
+  return (
+    <tr className={isSubRow ? 'community-subrow' : undefined}>
+      <td>
+        <input
+          type="checkbox"
+          checked={s.available}
+          onChange={(e) => update(s.id, { available: e.target.checked })}
+        />
+      </td>
+      <td className={isSubRow ? 'community-subrow__name' : undefined}>
+        {isSubRow ? `↳ ${s.preceptors?.[0] || s.name}` : s.name}
+        {!isSubRow && s.preceptors?.length > 0 && <div className="muted">{s.preceptors.join('; ')}</div>}
+      </td>
+      <td>{s.category}</td>
+      <td>
+        <NumberField value={s.distance} onChange={(v) => update(s.id, { distance: v })} />
+      </td>
+      <td>
+        <input
+          type="checkbox"
+          checked={s.isSubspecialty}
+          onChange={(e) => update(s.id, { isSubspecialty: e.target.checked })}
+        />
+      </td>
+      <td>
+        <input type="checkbox" checked={s.isAustin} onChange={(e) => update(s.id, { isAustin: e.target.checked })} />
+      </td>
+      <td>
+        <input
+          type="checkbox"
+          checked={s.requiresSpanish}
+          onChange={(e) => update(s.id, { requiresSpanish: e.target.checked })}
+        />
+      </td>
+      {[1, 2, 3, 4, 5, 6].map((w) => (
+        <td key={w}>
+          <div className="row" style={{ gap: 4 }}>
+            <input
+              type="checkbox"
+              checked={s.weeksOpen.includes(w)}
+              disabled={!s.available}
+              onChange={() => toggleWeek(s, w)}
+              title={`Open in week ${w}?`}
+            />
+            <NumberField value={s.capacityByWeek[w] ?? 0} onChange={(v) => setCapacity(s, w, v ?? 0)} style={{ width: 44 }} />
+          </div>
+        </td>
+      ))}
+      <td>
+        <button onClick={onRemove}>Remove</button>
+      </td>
+    </tr>
+  );
+}
+
+const COMMUNITY_TABLE_COLSPAN = 15;
+
 function CommunityTable() {
   const state = useAppState();
   const dispatch = useAppDispatch();
@@ -137,6 +195,7 @@ function CommunityTable() {
   const [newSiteName, setNewSiteName] = useState('');
   const [newSiteDistance, setNewSiteDistance] = useState(0);
   const [newSitePreceptor, setNewSitePreceptor] = useState('');
+  const [newDoctorByParent, setNewDoctorByParent] = useState({});
 
   const update = (siteId, patch) => dispatch({ type: 'UPDATE_SITE', pool: 'community', siteId, patch });
 
@@ -151,16 +210,32 @@ function CommunityTable() {
     update(site.id, { capacityByWeek: { ...site.capacityByWeek, [week]: value } });
   };
 
-  const filtered = useMemo(() => {
+  const families = useMemo(() => {
+    const list = state.sites.community;
+    const parents = list.filter((s) => !s.splitFromId);
+    return parents.map((parent) => ({
+      parent,
+      children: list.filter((s) => s.splitFromId === parent.id),
+    }));
+  }, [state.sites.community]);
+
+  const filteredFamilies = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    if (!q) return state.sites.community;
-    return state.sites.community.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        (s.category || '').toLowerCase().includes(q) ||
-        (s.preceptors || []).some((p) => p.toLowerCase().includes(q))
-    );
-  }, [state.sites.community, filter]);
+    if (!q) return families;
+    return families.filter(({ parent, children }) => {
+      const haystack = [
+        parent.name,
+        parent.category,
+        ...(parent.preceptors || []),
+        ...children.flatMap((c) => [c.name, ...(c.preceptors || [])]),
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [families, filter]);
+
+  const shownCount = filteredFamilies.reduce((n, f) => n + 1 + f.children.length, 0);
 
   const handleAddSite = () => {
     if (!newSiteName.trim()) return;
@@ -187,6 +262,30 @@ function CommunityTable() {
     setNewSitePreceptor('');
   };
 
+  const handleAddDoctor = (parent) => {
+    const name = (newDoctorByParent[parent.id] || '').trim();
+    if (!name) return;
+    dispatch({
+      type: 'ADD_COMMUNITY_SITE',
+      site: {
+        id: `${parent.id}--custom-${Date.now()}`,
+        name: `${parent.name} — ${name}`,
+        category: parent.category,
+        distance: parent.distance,
+        isSubspecialty: parent.isSubspecialty,
+        isAustin: parent.isAustin,
+        requiresSpanish: false,
+        preceptors: [name],
+        available: true,
+        weeksOpen: [1, 2, 3, 4, 5, 6],
+        capacityByWeek: { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1 },
+        isBackupPreceptor: false,
+        splitFromId: parent.id,
+      },
+    });
+    setNewDoctorByParent((prev) => ({ ...prev, [parent.id]: '' }));
+  };
+
   return (
     <div>
       <div className="row" style={{ marginBottom: 8 }}>
@@ -197,14 +296,14 @@ function CommunityTable() {
           onChange={(e) => setFilter(e.target.value)}
           style={{ width: 260 }}
         />
-        <span className="muted">{filtered.length} of {state.sites.community.length} sites</span>
+        <span className="muted">{shownCount} of {state.sites.community.length} sites</span>
       </div>
       <div className="table-scroll">
         <table>
           <thead>
             <tr>
               <th>Available</th>
-              <th>Site</th>
+              <th>Site / Doctor</th>
               <th>Category</th>
               <th>Distance</th>
               <th>Subspecialty (1-wk max)</th>
@@ -217,70 +316,19 @@ function CommunityTable() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((s) => (
-              <tr key={s.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={s.available}
-                    onChange={(e) => update(s.id, { available: e.target.checked })}
-                  />
-                </td>
-                <td>
-                  {s.name}
-                  {s.preceptors?.length > 0 && (
-                    <div className="muted">{s.preceptors.join('; ')}</div>
-                  )}
-                </td>
-                <td>{s.category}</td>
-                <td>
-                  <NumberField value={s.distance} onChange={(v) => update(s.id, { distance: v })} />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={s.isSubspecialty}
-                    onChange={(e) => update(s.id, { isSubspecialty: e.target.checked })}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={s.isAustin}
-                    onChange={(e) => update(s.id, { isAustin: e.target.checked })}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={s.requiresSpanish}
-                    onChange={(e) => update(s.id, { requiresSpanish: e.target.checked })}
-                  />
-                </td>
-                {[1, 2, 3, 4, 5, 6].map((w) => (
-                  <td key={w}>
-                    <div className="row" style={{ gap: 4 }}>
-                      <input
-                        type="checkbox"
-                        checked={s.weeksOpen.includes(w)}
-                        disabled={!s.available}
-                        onChange={() => toggleWeek(s, w)}
-                        title={`Open in week ${w}?`}
-                      />
-                      <NumberField
-                        value={s.capacityByWeek[w] ?? 0}
-                        onChange={(v) => setCapacity(s, w, v ?? 0)}
-                        style={{ width: 44 }}
-                      />
-                    </div>
-                  </td>
-                ))}
-                <td>
-                  <button onClick={() => dispatch({ type: 'REMOVE_COMMUNITY_SITE', siteId: s.id })}>
-                    Remove
-                  </button>
-                </td>
-              </tr>
+            {filteredFamilies.map(({ parent, children }) => (
+              <FamilyGroup
+                key={parent.id}
+                parent={parent}
+                children={children}
+                update={update}
+                toggleWeek={toggleWeek}
+                setCapacity={setCapacity}
+                onRemove={(id) => dispatch({ type: 'REMOVE_COMMUNITY_SITE', siteId: id })}
+                newDoctorName={newDoctorByParent[parent.id] || ''}
+                onNewDoctorNameChange={(v) => setNewDoctorByParent((prev) => ({ ...prev, [parent.id]: v }))}
+                onAddDoctor={() => handleAddDoctor(parent)}
+              />
             ))}
           </tbody>
         </table>
@@ -306,14 +354,53 @@ function CommunityTable() {
           onChange={(e) => setNewSiteDistance(e.target.value)}
           style={{ width: 80 }}
         />
-        <button onClick={handleAddSite}>Add community site</button>
+        <button onClick={handleAddSite}>Add new site</button>
       </div>
       <p className="muted">
-        Adding a doctor name creates a separately schedulable row for that specific doctor (e.g. to
-        add another doctor at an existing site, add it again with the same site name and a
-        different doctor).
+        Use "Add new site" for a brand-new practice. To add another doctor at an existing site, use
+        the "+ Add doctor" row underneath that site instead.
       </p>
     </div>
+  );
+}
+
+function FamilyGroup({ parent, children, update, toggleWeek, setCapacity, onRemove, newDoctorName, onNewDoctorNameChange, onAddDoctor }) {
+  return (
+    <>
+      <CommunitySiteRow
+        s={parent}
+        isSubRow={false}
+        update={update}
+        toggleWeek={toggleWeek}
+        setCapacity={setCapacity}
+        onRemove={() => onRemove(parent.id)}
+      />
+      {children.map((child) => (
+        <CommunitySiteRow
+          key={child.id}
+          s={child}
+          isSubRow
+          update={update}
+          toggleWeek={toggleWeek}
+          setCapacity={setCapacity}
+          onRemove={() => onRemove(child.id)}
+        />
+      ))}
+      <tr className="community-subrow community-subrow--add">
+        <td colSpan={COMMUNITY_TABLE_COLSPAN}>
+          <div className="row">
+            <input
+              type="text"
+              placeholder={`+ Add another doctor at ${parent.name}...`}
+              value={newDoctorName}
+              onChange={(e) => onNewDoctorNameChange(e.target.value)}
+              style={{ width: 260 }}
+            />
+            <button onClick={onAddDoctor}>+ Add doctor</button>
+          </div>
+        </td>
+      </tr>
+    </>
   );
 }
 

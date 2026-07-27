@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useAppState, useAppDispatch } from '../state/AppContext';
+import { buildDisplayNames } from '../lib/csv';
 
 const ROTATION_OPTIONS = [
   { key: 'PHM', label: 'PHM', pool: 'phm' },
@@ -27,7 +28,8 @@ export default function Step4ManualLocks() {
   const rotation = ROTATION_OPTIONS.find((r) => r.key === rotationKey);
   const sitePool = state.sites[rotation.pool].filter((s) => rotation.pool !== 'community' || s.available);
 
-  const nameOf = (id) => state.roster.find((s) => s.id === id)?.name || id;
+  const displayNames = useMemo(() => buildDisplayNames(state.roster), [state.roster]);
+  const nameOf = (id) => displayNames[id] || id;
   const siteNameOf = (pool, id) => state.sites[pool].find((s) => s.id === id)?.name || id;
 
   const existingLockFor = (sId, rKey) =>
@@ -66,7 +68,7 @@ export default function Step4ManualLocks() {
             <option value="">Select student...</option>
             {filteredStudents.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.id} — {s.name}
+                {nameOf(s.id)}
               </option>
             ))}
           </select>
@@ -108,7 +110,7 @@ export default function Step4ManualLocks() {
             <tbody>
               {state.manualLocks.map((l) => (
                 <tr key={l.id}>
-                  <td>{nameOf(l.studentId)} ({l.studentId})</td>
+                  <td>{nameOf(l.studentId)}</td>
                   <td>{ROTATION_OPTIONS.find((r) => r.key === l.rotationKey)?.label}</td>
                   <td>{siteNameOf(l.pool, l.siteId)}</td>
                   <td>

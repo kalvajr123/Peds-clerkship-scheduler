@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAppState, useAppDispatch } from '../state/AppContext';
 import { exportResultsToExcel } from '../lib/excelExport';
+import { buildDisplayNames } from '../lib/csv';
 
-const TABS = ['Schedule', 'Mileage Summary', 'Student Key'];
+const TABS = ['Schedule', 'Mileage Summary'];
 
 const OVERFLOW_LABELS = {
   katyPHM: 'Katy (PHM)',
@@ -27,7 +28,8 @@ function ScheduleTab() {
   const [editingCell, setEditingCell] = useState(null); // {studentId, week}
   const schedule = state.schedule;
 
-  const nameOf = (id) => state.roster.find((s) => s.id === id)?.name || id;
+  const displayNames = useMemo(() => buildDisplayNames(state.roster), [state.roster]);
+  const nameOf = (id) => displayNames[id] || id;
 
   const handleCellClick = (studentId, week) => {
     setEditingCell({ studentId, week });
@@ -106,7 +108,7 @@ function ScheduleTab() {
           <tbody>
             {state.roster.map((s) => (
               <tr key={s.id}>
-                <td>{s.id}</td>
+                <td>{nameOf(s.id)}</td>
                 {[1, 2, 3, 4, 5, 6].map((w) => {
                   const cell = schedule.weekly[s.id]?.[w];
                   const isEditing = editingCell?.studentId === s.id && editingCell?.week === w;
@@ -151,6 +153,7 @@ function MileageSummaryTab() {
   const state = useAppState();
   const dispatch = useAppDispatch();
   const schedule = state.schedule;
+  const displayNames = useMemo(() => buildDisplayNames(state.roster), [state.roster]);
   if (!schedule) return null;
 
   const sorted = [...state.roster].sort((a, b) => schedule.rank[a.id] - schedule.rank[b.id]);
@@ -171,7 +174,7 @@ function MileageSummaryTab() {
       <table>
         <thead>
           <tr>
-            <th>Student ID</th>
+            <th>Student</th>
             <th>Total Distance</th>
             <th>Rank</th>
             <th>Z-Score</th>
@@ -184,7 +187,7 @@ function MileageSummaryTab() {
             const flag = z > state.zThreshold ? 'HIGH' : z < -state.zThreshold ? 'LOW' : '';
             return (
               <tr key={s.id} className={flag === 'HIGH' ? 'flag-high' : flag === 'LOW' ? 'flag-low' : ''}>
-                <td>{s.id}</td>
+                <td>{displayNames[s.id] || s.name}</td>
                 <td>{Math.round(schedule.mileage[s.id] * 10) / 10}</td>
                 <td>{schedule.rank[s.id]}</td>
                 <td>{z.toFixed(2)}</td>
@@ -195,28 +198,6 @@ function MileageSummaryTab() {
         </tbody>
       </table>
     </div>
-  );
-}
-
-function StudentKeyTab() {
-  const state = useAppState();
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>Student ID</th>
-          <th>Student Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {state.roster.map((s) => (
-          <tr key={s.id}>
-            <td>{s.id}</td>
-            <td>{s.name}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
   );
 }
 
@@ -255,7 +236,6 @@ export default function Step6Results() {
 
       {tab === 'Schedule' && <ScheduleTab />}
       {tab === 'Mileage Summary' && <MileageSummaryTab />}
-      {tab === 'Student Key' && <StudentKeyTab />}
 
       <div className="actions">
         <button onClick={() => dispatch({ type: 'SET_STEP', step: 5 })}>Back</button>

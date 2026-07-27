@@ -1,45 +1,44 @@
 // The balancing algorithm described in the spec's "Balancing Algorithm"
 // section. Runs entirely client-side.
 //
-// Term-structure assumption (confirmed with the coordinator): every
-// student spends 2 weeks in PHM (one CONTIGUOUS block, one site), 1 week
-// in PEM (one site), 2 individual weeks in Community (also a CONTIGUOUS
-// block — different site allowed per week, e.g. a 1-week subspecialty
-// followed immediately by a regular community week), and 1 leftover week
-// in Newborn (filler, distance 0). PHM and Community blocks don't need to
-// be adjacent to each other or in any particular order relative to PEM/
-// Newborn — only each block's own 2 weeks need to be back-to-back. The
-// algorithm itself chooses BOTH which absolute weeks (1-6) each rotation
-// type falls on for a given student, AND which site fills each slot.
+// Term-structure (confirmed with the coordinator): the 6-week term is
+// three fixed 2-week blocks — [1,2], [3,4], [5,6]. Every student is
+// assigned one block to PHM (one site, both weeks), a different block to
+// Community (2 individual weeks, e.g. a 1-week subspecialty followed
+// immediately by a regular community week — different site allowed per
+// week), and the third block splits into 1 week PEM (one site) + 1 week
+// Newborn (filler, distance 0), in either order. PHM therefore only ever
+// starts on week 1, 3, or 5 — never a mid-block week like 4. The
+// algorithm chooses which block goes to which rotation type per student,
+// AND which site fills each slot.
 
-const ALL_WEEKS = [1, 2, 3, 4, 5, 6];
+const BLOCKS = [
+  [1, 2],
+  [3, 4],
+  [5, 6],
+];
 
 // ---------------------------------------------------------------------
 // Week-timing templates
 // ---------------------------------------------------------------------
 
-function contiguousPairs() {
-  const pairs = [];
-  for (let w = 1; w <= 5; w++) pairs.push([w, w + 1]);
-  return pairs;
-}
-
 /**
  * All valid (phmWeeks, communityWeeks, pemWeek, newbornWeek) templates:
- * PHM and Community are each a contiguous 2-week block, disjoint from
- * each other; the 2 weeks left over split between PEM and Newborn (both
+ * PHM gets one of the 3 fixed blocks, Community gets a different block,
+ * and the remaining block's 2 weeks split between PEM and Newborn (both
  * orderings, since neither has an adjacency requirement).
  */
 export function buildWeekTemplates() {
   const templates = [];
-  const pairs = contiguousPairs();
-  for (const phmWeeks of pairs) {
-    for (const communityWeeks of pairs) {
-      if (communityWeeks.some((w) => phmWeeks.includes(w))) continue;
-      const used = new Set([...phmWeeks, ...communityWeeks]);
-      const remaining = ALL_WEEKS.filter((w) => !used.has(w));
-      templates.push({ phmWeeks, communityWeeks, pemWeek: remaining[0], newbornWeek: remaining[1] });
-      templates.push({ phmWeeks, communityWeeks, pemWeek: remaining[1], newbornWeek: remaining[0] });
+  for (let phmIdx = 0; phmIdx < BLOCKS.length; phmIdx++) {
+    for (let commIdx = 0; commIdx < BLOCKS.length; commIdx++) {
+      if (commIdx === phmIdx) continue;
+      const remainingIdx = [0, 1, 2].find((i) => i !== phmIdx && i !== commIdx);
+      const phmWeeks = BLOCKS[phmIdx];
+      const communityWeeks = BLOCKS[commIdx];
+      const remainingBlock = BLOCKS[remainingIdx];
+      templates.push({ phmWeeks, communityWeeks, pemWeek: remainingBlock[0], newbornWeek: remainingBlock[1] });
+      templates.push({ phmWeeks, communityWeeks, pemWeek: remainingBlock[1], newbornWeek: remainingBlock[0] });
     }
   }
   return templates;

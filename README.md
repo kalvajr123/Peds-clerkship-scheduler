@@ -34,10 +34,10 @@ Then open the printed local URL in your browser.
    generating.
 5. **Generate** — runs the balancing algorithm (hard preferences → manual
    locks → greedy fill → local-search cleanup → random restarts).
-6. **Results** — Schedule, Mileage Summary, and Student Key tabs, with
+6. **Results** — Schedule and Mileage Summary tabs (by student name), with
    inline manual overrides and an "Export to Excel" button that produces a
-   `.xlsx` with Term Distances / Student Key / Mileage Summary sheets
-   (including red/yellow outlier highlighting).
+   `.xlsx` with Term Distances / Mileage Summary sheets (including
+   red/yellow outlier highlighting).
 
 ## Building
 
