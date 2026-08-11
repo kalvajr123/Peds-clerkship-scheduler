@@ -12,11 +12,12 @@
 // algorithm chooses which block goes to which rotation type per student,
 // AND which site fills each slot.
 
-const BLOCKS = [
+export const WEEK_BLOCKS = [
   [1, 2],
   [3, 4],
   [5, 6],
 ];
+const BLOCKS = WEEK_BLOCKS;
 
 // ---------------------------------------------------------------------
 // Week-timing templates
@@ -92,12 +93,16 @@ function weeklyDistancePEM(site) {
 }
 
 function capacityOf(site, week, rotationType) {
-  if (rotationType === 'community') {
-    if (!site.available) return 0;
-    if (!site.weeksOpen || !site.weeksOpen.includes(week)) return 0;
-    return site.capacityByWeek?.[week] ?? 0;
+  // Newborn sites use a flat weekly capacity (same every week).
+  if (rotationType === 'newborn') {
+    return site.capacity == null ? Infinity : site.capacity;
   }
-  return site.capacity == null ? Infinity : site.capacity;
+  // PHM, PEM, and community sites all use per-week open/closed + capacity.
+  // (Community also has a whole-site available toggle; PHM/PEM don't need
+  // a separate one since an empty weeksOpen already means "closed".)
+  if (rotationType === 'community' && !site.available) return 0;
+  if (!site.weeksOpen || !site.weeksOpen.includes(week)) return 0;
+  return site.capacityByWeek?.[week] ?? 0;
 }
 
 // Christus and Austin sites are opt-in only: reachable exclusively via an
@@ -718,6 +723,13 @@ function isBetterAttempt(candidate, current) {
   if (candidate.unfilledCount !== current.unfilledCount) {
     return candidate.unfilledCount < current.unfilledCount;
   }
+  // Satisfying explicit hard-preference requests (Christus/Austin/Katy/
+  // Woodlands) matters more than shaving a bit off variance — a restart
+  // where a student's random week-template just missed a site's open
+  // block shouldn't beat one where the same request succeeded.
+  if (candidate.overflow.length !== current.overflow.length) {
+    return candidate.overflow.length < current.overflow.length;
+  }
   if (candidate.sum !== current.sum) {
     return candidate.sum < current.sum;
   }
@@ -861,18 +873,19 @@ export function validateSiteCapacity(sitesState, rosterSize) {
     );
   }
 
-  const phmSeatWeeks = sitesState.phm
-    .filter((s) => s.capacity != null)
-    .reduce((sum, s) => sum + s.capacity * 6, 0);
+  const seatWeeks = (sites) =>
+    sites
+      .filter((s) => !isOptInOnly(s)) // opt-in sites (Christus) aren't auto-filled, so don't count toward capacity
+      .reduce((sum, s) => sum + (s.weeksOpen || []).reduce((ws, w) => ws + (s.capacityByWeek?.[w] || 0), 0), 0);
+
+  const phmSeatWeeks = seatWeeks(sitesState.phm);
   if (phmSeatWeeks < rosterSize * 2) {
     warnings.push(
       `PHM capacity looks tight: only ~${phmSeatWeeks} seat-weeks available across the term for ${rosterSize} students needing 2 weeks each.`
     );
   }
 
-  const pemSeatWeeks = sitesState.pem
-    .filter((s) => s.capacity != null)
-    .reduce((sum, s) => sum + s.capacity * 6, 0);
+  const pemSeatWeeks = seatWeeks(sitesState.pem);
   if (pemSeatWeeks < rosterSize) {
     warnings.push(
       `PEM capacity looks tight: only ~${pemSeatWeeks} seat-weeks available across the term for ${rosterSize} students needing 1 week each.`
