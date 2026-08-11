@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useAppState, useAppDispatch } from '../state/AppContext';
-import { validateSiteCapacity } from '../lib/scheduler';
+import { validateSiteCapacity, WEEK_BLOCKS } from '../lib/scheduler';
 
 function NumberField({ value, onChange, min = 0, style }) {
   return (
@@ -14,10 +14,70 @@ function NumberField({ value, onChange, min = 0, style }) {
   );
 }
 
+/** One open/capacity cell for a single week (used by PEM and Community tables). */
+function WeekOpenCapCell({ site, week, onToggle, onCapacity, disabled }) {
+  return (
+    <td>
+      <div className="row" style={{ gap: 4 }}>
+        <input
+          type="checkbox"
+          checked={site.weeksOpen.includes(week)}
+          disabled={disabled}
+          onChange={() => onToggle(site, week)}
+          title={`Open in week ${week}?`}
+        />
+        <NumberField
+          value={site.capacityByWeek[week] ?? 0}
+          onChange={(v) => onCapacity(site, week, v ?? 0)}
+          style={{ width: 44 }}
+        />
+      </div>
+    </td>
+  );
+}
+
+/** One open/capacity cell for a whole 2-week block (used by the PHM table). */
+function BlockOpenCapCell({ site, block, onToggleBlock, onCapacityBlock }) {
+  const bothOpen = block.every((w) => site.weeksOpen.includes(w));
+  return (
+    <td>
+      <div className="row" style={{ gap: 4 }}>
+        <input
+          type="checkbox"
+          checked={bothOpen}
+          onChange={() => onToggleBlock(site, block)}
+          title={`Open for weeks ${block.join('-')}?`}
+        />
+        <NumberField
+          value={site.capacityByWeek[block[0]] ?? 0}
+          onChange={(v) => onCapacityBlock(site, block, v ?? 0)}
+          style={{ width: 44 }}
+        />
+      </div>
+    </td>
+  );
+}
+
 function PHMTable() {
   const state = useAppState();
   const dispatch = useAppDispatch();
   const update = (siteId, patch) => dispatch({ type: 'UPDATE_SITE', pool: 'phm', siteId, patch });
+
+  const toggleBlock = (site, block) => {
+    const bothOpen = block.every((w) => site.weeksOpen.includes(w));
+    const weeksOpen = bothOpen
+      ? site.weeksOpen.filter((w) => !block.includes(w))
+      : [...new Set([...site.weeksOpen, ...block])].sort((a, b) => a - b);
+    update(site.id, { weeksOpen });
+  };
+
+  const setBlockCapacity = (site, block, value) => {
+    const capacityByWeek = { ...site.capacityByWeek };
+    block.forEach((w) => {
+      capacityByWeek[w] = value;
+    });
+    update(site.id, { capacityByWeek });
+  };
 
   return (
     <div className="table-scroll">
@@ -27,27 +87,33 @@ function PHMTable() {
             <th>Site</th>
             <th>Distance / day</th>
             <th>Days / week</th>
-            <th>Capacity (per week)</th>
+            {WEEK_BLOCKS.map((block) => (
+              <th key={block.join('-')}>Weeks {block.join('-')} open / cap</th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {state.sites.phm.map((s) => (
             <tr key={s.id}>
-              <td>{s.name}</td>
+              <td>
+                {s.name}
+                {s.note && <div className="muted">{s.note}</div>}
+              </td>
               <td>
                 <NumberField value={s.distancePerDay} onChange={(v) => update(s.id, { distancePerDay: v })} />
               </td>
               <td>
                 <NumberField value={s.daysPerWeek} onChange={(v) => update(s.id, { daysPerWeek: v })} />
               </td>
-              <td>
-                <NumberField
-                  value={s.capacity}
-                  onChange={(v) => update(s.id, { capacity: v })}
-                  style={{ width: 64 }}
+              {WEEK_BLOCKS.map((block) => (
+                <BlockOpenCapCell
+                  key={block.join('-')}
+                  site={s}
+                  block={block}
+                  onToggleBlock={toggleBlock}
+                  onCapacityBlock={setBlockCapacity}
                 />
-                {s.capacity == null && <span className="muted"> (unlimited / opt-in)</span>}
-              </td>
+              ))}
             </tr>
           ))}
         </tbody>
@@ -61,6 +127,17 @@ function PEMTable() {
   const dispatch = useAppDispatch();
   const update = (siteId, patch) => dispatch({ type: 'UPDATE_SITE', pool: 'pem', siteId, patch });
 
+  const toggleWeek = (site, week) => {
+    const weeksOpen = site.weeksOpen.includes(week)
+      ? site.weeksOpen.filter((w) => w !== week)
+      : [...site.weeksOpen, week].sort((a, b) => a - b);
+    update(site.id, { weeksOpen });
+  };
+
+  const setCapacity = (site, week, value) => {
+    update(site.id, { capacityByWeek: { ...site.capacityByWeek, [week]: value } });
+  };
+
   return (
     <div className="table-scroll">
       <table>
@@ -70,13 +147,18 @@ function PEMTable() {
             <th>Distance / day</th>
             <th>Days at site</th>
             <th>Days at Main</th>
-            <th>Capacity (per week)</th>
+            {[1, 2, 3, 4, 5, 6].map((w) => (
+              <th key={w}>W{w} open / cap</th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {state.sites.pem.map((s) => (
             <tr key={s.id}>
-              <td>{s.name}</td>
+              <td>
+                {s.name}
+                {s.note && <div className="muted">{s.note}</div>}
+              </td>
               <td>
                 <NumberField value={s.distancePerDay} onChange={(v) => update(s.id, { distancePerDay: v })} />
               </td>
@@ -88,10 +170,9 @@ function PEMTable() {
                 )}
               </td>
               <td>{s.daysAtMain != null ? <NumberField value={s.daysAtMain} onChange={(v) => update(s.id, { daysAtMain: v })} /> : '—'}</td>
-              <td>
-                <NumberField value={s.capacity} onChange={(v) => update(s.id, { capacity: v })} />
-                {s.capacity == null && <span className="muted"> (unlimited / opt-in)</span>}
-              </td>
+              {[1, 2, 3, 4, 5, 6].map((w) => (
+                <WeekOpenCapCell key={w} site={s} week={w} onToggle={toggleWeek} onCapacity={setCapacity} />
+              ))}
             </tr>
           ))}
         </tbody>
@@ -130,14 +211,14 @@ function NewbornTable() {
   );
 }
 
-function CommunitySiteRow({ s, isSubRow, update, toggleWeek, setCapacity, onRemove }) {
+function CommunitySiteRow({ s, isSubRow, update, toggleWeek, setCapacity, onRemove, onAvailableChange }) {
   return (
     <tr className={isSubRow ? 'community-subrow' : undefined}>
       <td>
         <input
           type="checkbox"
           checked={s.available}
-          onChange={(e) => update(s.id, { available: e.target.checked })}
+          onChange={(e) => (onAvailableChange ? onAvailableChange(e.target.checked) : update(s.id, { available: e.target.checked }))}
         />
       </td>
       <td className={isSubRow ? 'community-subrow__name' : undefined}>
@@ -166,18 +247,7 @@ function CommunitySiteRow({ s, isSubRow, update, toggleWeek, setCapacity, onRemo
         />
       </td>
       {[1, 2, 3, 4, 5, 6].map((w) => (
-        <td key={w}>
-          <div className="row" style={{ gap: 4 }}>
-            <input
-              type="checkbox"
-              checked={s.weeksOpen.includes(w)}
-              disabled={!s.available}
-              onChange={() => toggleWeek(s, w)}
-              title={`Open in week ${w}?`}
-            />
-            <NumberField value={s.capacityByWeek[w] ?? 0} onChange={(v) => setCapacity(s, w, v ?? 0)} style={{ width: 44 }} />
-          </div>
-        </td>
+        <WeekOpenCapCell key={w} site={s} week={w} onToggle={toggleWeek} onCapacity={setCapacity} disabled={!s.available} />
       ))}
       <td>
         <button onClick={onRemove}>Remove</button>
@@ -365,6 +435,16 @@ function CommunityTable() {
 }
 
 function FamilyGroup({ parent, children, update, toggleWeek, setCapacity, onRemove, newDoctorName, onNewDoctorNameChange, onAddDoctor }) {
+  const handleParentAvailableChange = (checked) => {
+    update(parent.id, { available: checked });
+    // Unchecking the site closes it for every doctor too. Re-checking it
+    // does NOT auto re-enable doctors — the coordinator opts each back in,
+    // so a doctor who actually left the practice doesn't silently reappear.
+    if (!checked) {
+      children.forEach((child) => update(child.id, { available: false }));
+    }
+  };
+
   return (
     <>
       <CommunitySiteRow
@@ -374,6 +454,7 @@ function FamilyGroup({ parent, children, update, toggleWeek, setCapacity, onRemo
         toggleWeek={toggleWeek}
         setCapacity={setCapacity}
         onRemove={() => onRemove(parent.id)}
+        onAvailableChange={handleParentAvailableChange}
       />
       {children.map((child) => (
         <CommunitySiteRow

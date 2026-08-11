@@ -14,15 +14,17 @@ export const PREFERENCE_TEXT_DEFAULTS = {
   woodlandsPEM: '',
 };
 
+function cloneSiteWithWeeks(s) {
+  return { ...s, weeksOpen: [...s.weeksOpen], capacityByWeek: { ...s.capacityByWeek } };
+}
+
 function cloneDefaultSites() {
   return {
-    phm: defaultSites.phmSites.map((s) => ({ ...s })),
-    pem: defaultSites.pemSites.map((s) => ({ ...s })),
+    phm: defaultSites.phmSites.map(cloneSiteWithWeeks),
+    pem: defaultSites.pemSites.map(cloneSiteWithWeeks),
     newborn: defaultSites.newbornSites.map((s) => ({ ...s })),
     community: defaultSites.communitySites.map((s) => ({
-      ...s,
-      weeksOpen: [...s.weeksOpen],
-      capacityByWeek: { ...s.capacityByWeek },
+      ...cloneSiteWithWeeks(s),
       preceptors: [...(s.preceptors || [])],
     })),
   };

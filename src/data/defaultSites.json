@@ -8,23 +8,68 @@
       "name": "PHM Main Campus",
       "distancePerDay": 0,
       "daysPerWeek": 6,
-      "capacity": 10
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 10,
+        "2": 10,
+        "3": 10,
+        "4": 10,
+        "5": 10,
+        "6": 10
+      }
     },
     {
       "id": "phm-wc",
       "name": "PHM West Campus (Katy)",
       "distancePerDay": 25,
       "daysPerWeek": 5,
-      "capacity": 2,
-      "note": "Ideally send 10 to main campus first, then any overflow to WC — but coordinator may adjust capacity per term (e.g. term 1 2026-27 accommodated 3)."
+      "note": "Ideally send 10 to main campus first, then any overflow to WC — but coordinator may adjust capacity per term (e.g. term 1 2026-27 accommodated 3).",
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2
+      }
     },
     {
       "id": "phm-christus",
       "name": "PHM Christus Children's (San Antonio)",
       "distancePerDay": 0,
       "daysPerWeek": 0,
-      "capacity": null,
-      "note": "No commute distance — students live on-site. Capacity is opt-in / first-come-first-served, set by coordinator each term."
+      "note": "No commute distance — students live on-site. Capacity is opt-in / first-come-first-served, set by coordinator each term.",
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      }
     }
   ],
   "pemSites": [
@@ -33,7 +78,22 @@
       "name": "PEM TCH Main Campus",
       "distancePerDay": 0,
       "daysPerWeek": 5,
-      "capacity": 4
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 4,
+        "2": 4,
+        "3": 4,
+        "4": 4,
+        "5": 4,
+        "6": 4
+      }
     },
     {
       "id": "pem-wc",
@@ -41,8 +101,23 @@
       "distancePerDay": 25,
       "daysAtSite": 4,
       "daysAtMain": 1,
-      "capacity": 1,
-      "note": "4 days at West Campus + 1 day at Main Campus (fellow teaching), so weekly distance = 4×distancePerDay + 1×0."
+      "note": "4 days at West Campus + 1 day at Main Campus (fellow teaching), so weekly distance = 4×distancePerDay + 1×0.",
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      }
     },
     {
       "id": "pem-woodlands",
@@ -50,16 +125,46 @@
       "distancePerDay": 39,
       "daysAtSite": 4,
       "daysAtMain": 1,
-      "capacity": 1,
-      "note": "Same 4+1 day split as West Campus."
+      "note": "Same 4+1 day split as West Campus.",
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      }
     },
     {
       "id": "pem-christus",
       "name": "PEM Christus Children's (San Antonio)",
       "distancePerDay": 0,
       "daysPerWeek": 0,
-      "capacity": null,
-      "note": "No commute distance — students live on-site."
+      "note": "No commute distance — students live on-site.",
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      }
     }
   ],
   "newbornSites": [
@@ -1262,100 +1367,7 @@
         "5": 1,
         "6": 1
       },
-      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
-    },
-    {
-      "name": "Harris Health Pasadena — Dr. Betty Del Rio Rodriguez",
-      "category": "BCM Academic Gen Peds Sites",
-      "distance": 18,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Betty Del Rio Rodriguez"
-      ],
-      "id": "harris-health-pasadena--dr-betty-del-rio-rodriguez",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "harris-health-pasadena"
-    },
-    {
-      "name": "Harris Health Pasadena — Dr. Griselda Meza",
-      "category": "BCM Academic Gen Peds Sites",
-      "distance": 18,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Griselda Meza"
-      ],
-      "id": "harris-health-pasadena--dr-griselda-meza",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "harris-health-pasadena"
-    },
-    {
-      "name": "Harris Health Pasadena — Dr. Ana Monterrey (backup only)",
-      "category": "BCM Academic Gen Peds Sites",
-      "distance": 18,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Ana Monterrey (backup only)"
-      ],
-      "id": "harris-health-pasadena--dr-ana-monterrey-backup-only",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": true,
-      "splitFromId": "harris-health-pasadena"
+      "note": "Runs as a shared clinic — capacity is 1-2 students per week regardless of which doctor is on, not tied to a specific attending."
     },
     {
       "name": "TCH Primary Care Practice at Palm Center",
@@ -1384,7 +1396,8 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "note": "Runs as a shared clinic — capacity is 1-2 students per week, not tied to a specific attending."
     },
     {
       "name": "TCH Mobile Clinic Program",
@@ -1567,69 +1580,7 @@
         "5": 1,
         "6": 1
       },
-      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
-    },
-    {
-      "name": "TCH Gastroenterology — Amy Issa",
-      "category": "BCM Peds Sub-Specialty Sites",
-      "distance": 0,
-      "isSubspecialty": true,
-      "isAustin": false,
-      "preceptors": [
-        "Amy Issa"
-      ],
-      "id": "tch-gastroenterology--amy-issa",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tch-gastroenterology"
-    },
-    {
-      "name": "TCH Gastroenterology — Anna Banc-Husu",
-      "category": "BCM Peds Sub-Specialty Sites",
-      "distance": 0,
-      "isSubspecialty": true,
-      "isAustin": false,
-      "preceptors": [
-        "Anna Banc-Husu"
-      ],
-      "id": "tch-gastroenterology--anna-banc-husu",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tch-gastroenterology"
+      "note": "Subspecialty consult service — takes 1 student at a time regardless of which doctor is on, not tied to a specific attending."
     },
     {
       "name": "TCH Pulmonary",
@@ -1660,69 +1611,7 @@
         "5": 1,
         "6": 1
       },
-      "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
-    },
-    {
-      "name": "TCH Pulmonary — David Moreno (main contact)",
-      "category": "BCM Peds Sub-Specialty Sites",
-      "distance": 0,
-      "isSubspecialty": true,
-      "isAustin": false,
-      "preceptors": [
-        "David Moreno (main contact)"
-      ],
-      "id": "tch-pulmonary--david-moreno-main-contact",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tch-pulmonary"
-    },
-    {
-      "name": "TCH Pulmonary — Shailendra Das (back up)",
-      "category": "BCM Peds Sub-Specialty Sites",
-      "distance": 0,
-      "isSubspecialty": true,
-      "isAustin": false,
-      "preceptors": [
-        "Shailendra Das (back up)"
-      ],
-      "id": "tch-pulmonary--shailendra-das-back-up",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": true,
-      "splitFromId": "tch-pulmonary"
+      "note": "Subspecialty consult service — takes 1 student at a time regardless of which doctor is on, not tied to a specific attending."
     },
     {
       "name": "TCH Woodlands (ID)",
