@@ -15,7 +15,12 @@ export const PREFERENCE_TEXT_DEFAULTS = {
 };
 
 function cloneSiteWithWeeks(s) {
-  return { ...s, weeksOpen: [...s.weeksOpen], capacityByWeek: { ...s.capacityByWeek } };
+  return {
+    ...s,
+    weeksOpen: [...s.weeksOpen],
+    capacityByWeek: { ...s.capacityByWeek },
+    ...(s.primaryCapacityByWeek ? { primaryCapacityByWeek: { ...s.primaryCapacityByWeek } } : {}),
+  };
 }
 
 function cloneDefaultSites() {
@@ -27,6 +32,7 @@ function cloneDefaultSites() {
       ...cloneSiteWithWeeks(s),
       preceptors: [...(s.preceptors || [])],
     })),
+    christusHousingCap: 3,
   };
 }
 
@@ -83,6 +89,9 @@ function reducer(state, action) {
         schedule: null,
       };
     }
+
+    case 'SET_CHRISTUS_HOUSING_CAP':
+      return { ...state, sites: { ...state.sites, christusHousingCap: action.cap }, schedule: null };
 
     case 'ADD_COMMUNITY_SITE': {
       return {

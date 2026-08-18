@@ -23,6 +23,14 @@
         "4": 10,
         "5": 10,
         "6": 10
+      },
+      "primaryCapacityByWeek": {
+        "1": 8,
+        "2": 8,
+        "3": 8,
+        "4": 8,
+        "5": 8,
+        "6": 8
       }
     },
     {
@@ -30,7 +38,62 @@
       "name": "PHM West Campus (Katy)",
       "distancePerDay": 25,
       "daysPerWeek": 5,
-      "note": "Ideally send 10 to main campus first, then any overflow to WC — but coordinator may adjust capacity per term (e.g. term 1 2026-27 accommodated 3).",
+      "note": "Ideally 8 at Main + 2 at WC first; only dip into overflow (Main up to 10, WC up to 3) if a block genuinely needs it.",
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3
+      },
+      "primaryCapacityByWeek": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2
+      }
+    },
+    {
+      "id": "phm-christus",
+      "name": "PHM Christus Children's (San Antonio)",
+      "distancePerDay": 0,
+      "daysPerWeek": 6,
+      "note": "No commute distance — students live on-site. Capacity is opt-in / first-come-first-served, set by coordinator each term.",
+      "weeksOpen": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "capacityByWeek": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2
+      }
+    }
+  ],
+  "pemSites": [
+    {
+      "id": "pem-main-a",
+      "name": "PEM TCH Main Campus - A",
+      "distancePerDay": 0,
+      "daysPerWeek": 5,
       "weeksOpen": [
         1,
         2,
@@ -49,33 +112,8 @@
       }
     },
     {
-      "id": "phm-christus",
-      "name": "PHM Christus Children's (San Antonio)",
-      "distancePerDay": 0,
-      "daysPerWeek": 0,
-      "note": "No commute distance — students live on-site. Capacity is opt-in / first-come-first-served, set by coordinator each term.",
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      }
-    }
-  ],
-  "pemSites": [
-    {
-      "id": "pem-main",
-      "name": "PEM TCH Main Campus",
+      "id": "pem-main-b",
+      "name": "PEM TCH Main Campus - B",
       "distancePerDay": 0,
       "daysPerWeek": 5,
       "weeksOpen": [
@@ -87,12 +125,12 @@
         6
       ],
       "capacityByWeek": {
-        "1": 4,
-        "2": 4,
-        "3": 4,
-        "4": 4,
-        "5": 4,
-        "6": 4
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2
       }
     },
     {
@@ -150,12 +188,10 @@
       "daysPerWeek": 0,
       "note": "No commute distance — students live on-site.",
       "weeksOpen": [
-        1,
         2,
         3,
         4,
-        5,
-        6
+        5
       ],
       "capacityByWeek": {
         "1": 1,
@@ -164,17 +200,11 @@
         "4": 1,
         "5": 1,
         "6": 1
-      }
+      },
+      "daysAtSite": 5
     }
   ],
   "newbornSites": [
-    {
-      "id": "newborn-tch",
-      "name": "TCH Newborn",
-      "distancePerDay": 0,
-      "capacity": 2,
-      "pairStudents": true
-    },
     {
       "id": "newborn-bt",
       "name": "Ben Taub Newborn",
@@ -185,6 +215,13 @@
     {
       "id": "newborn-bt-nicu",
       "name": "Ben Taub NICU",
+      "distancePerDay": 0,
+      "capacity": 2,
+      "pairStudents": true
+    },
+    {
+      "id": "newborn-tch",
+      "name": "TCH Newborn",
       "distancePerDay": 0,
       "capacity": 2,
       "pairStudents": true
@@ -259,7 +296,7 @@
       ],
       "id": "cypress-health-center",
       "available": true,
-      "requiresSpanish": false,
+      "requiresSpanish": true,
       "weeksOpen": [
         1,
         2,
@@ -288,7 +325,7 @@
       ],
       "id": "edgebrook-clinic",
       "available": true,
-      "requiresSpanish": false,
+      "requiresSpanish": true,
       "weeksOpen": [
         1,
         2,
@@ -429,8 +466,7 @@
       "isSubspecialty": false,
       "isAustin": false,
       "preceptors": [
-        "Dr. Disha Saharia",
-        "Dr. Sangeeta Agrawala (backup)"
+        "Dr. Disha Saharia"
       ],
       "id": "texas-family-pediatric-group",
       "available": true,
@@ -482,37 +518,6 @@
         "6": 1
       },
       "isBackupPreceptor": false,
-      "splitFromId": "texas-family-pediatric-group"
-    },
-    {
-      "name": "Texas Family Pediatric Group — Dr. Sangeeta Agrawala (backup)",
-      "category": "Non-TCP Sites",
-      "distance": 24.5,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Sangeeta Agrawala (backup)"
-      ],
-      "id": "texas-family-pediatric-group--dr-sangeeta-agrawala-backup",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": true,
       "splitFromId": "texas-family-pediatric-group"
     },
     {
@@ -605,68 +610,6 @@
       "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
     },
     {
-      "name": "TCP Braeswood (previously Green Park) — Dr. Shannon Hayes",
-      "category": "TCP Sites",
-      "distance": 1.4,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Shannon Hayes"
-      ],
-      "id": "tcp-braeswood-previously-green-park--dr-shannon-hayes",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-braeswood-previously-green-park"
-    },
-    {
-      "name": "TCP Braeswood (previously Green Park) — Dr. Beverly Lee (backup)",
-      "category": "TCP Sites",
-      "distance": 1.4,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Beverly Lee (backup)"
-      ],
-      "id": "tcp-braeswood-previously-green-park--dr-beverly-lee-backup",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": true,
-      "splitFromId": "tcp-braeswood-previously-green-park"
-    },
-    {
       "name": "TCP Corinthian Pointe",
       "category": "TCP Sites",
       "distance": 7.9,
@@ -699,99 +642,6 @@
       "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
     },
     {
-      "name": "TCP Corinthian Pointe — Dr. Shang Chen Wu (Allison)",
-      "category": "TCP Sites",
-      "distance": 7.9,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Shang Chen Wu (Allison)"
-      ],
-      "id": "tcp-corinthian-pointe--dr-shang-chen-wu-allison",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-corinthian-pointe"
-    },
-    {
-      "name": "TCP Corinthian Pointe — Dr. Rabia Nagda",
-      "category": "TCP Sites",
-      "distance": 7.9,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Rabia Nagda"
-      ],
-      "id": "tcp-corinthian-pointe--dr-rabia-nagda",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-corinthian-pointe"
-    },
-    {
-      "name": "TCP Corinthian Pointe — Dr. Christianah Ogunleye",
-      "category": "TCP Sites",
-      "distance": 7.9,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Christianah Ogunleye"
-      ],
-      "id": "tcp-corinthian-pointe--dr-christianah-ogunleye",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-corinthian-pointe"
-    },
-    {
       "name": "TCP Cypress",
       "category": "TCP Sites",
       "distance": 31.7,
@@ -821,68 +671,6 @@
         "6": 1
       },
       "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
-    },
-    {
-      "name": "TCP Cypress — Dr. Alyssa Kuban",
-      "category": "TCP Sites",
-      "distance": 31.7,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Alyssa Kuban"
-      ],
-      "id": "tcp-cypress--dr-alyssa-kuban",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-cypress"
-    },
-    {
-      "name": "TCP Cypress — Dr. Allison Arthur",
-      "category": "TCP Sites",
-      "distance": 31.7,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Allison Arthur"
-      ],
-      "id": "tcp-cypress--dr-allison-arthur",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-cypress"
     },
     {
       "name": "TCP Gulfgate",
@@ -972,7 +760,7 @@
       }
     },
     {
-      "name": "TCP Hill Country Pediatrics (Austin)",
+      "name": "TC Bailey Square Pediatrics",
       "category": "TCP Sites",
       "distance": 0,
       "isSubspecialty": false,
@@ -1156,46 +944,16 @@
       "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
     },
     {
-      "name": "TCP Shadow Creek Ranch — Dr. Wendy Valicek",
+      "name": "TCP Shadow Creek Ranch — Dr. Wendy Valicek & Dr. Deborah Davis",
       "category": "TCP Sites",
       "distance": 12.1,
       "isSubspecialty": false,
       "isAustin": false,
       "preceptors": [
-        "Dr. Wendy Valicek"
-      ],
-      "id": "tcp-shadow-creek-ranch--dr-wendy-valicek",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-shadow-creek-ranch"
-    },
-    {
-      "name": "TCP Shadow Creek Ranch — Dr. Deborah Davis",
-      "category": "TCP Sites",
-      "distance": 12.1,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
+        "Dr. Wendy Valicek",
         "Dr. Deborah Davis"
       ],
-      "id": "tcp-shadow-creek-ranch--dr-deborah-davis",
+      "id": "tcp-shadow-creek-ranch--valicek-davis",
       "available": true,
       "requiresSpanish": false,
       "weeksOpen": [
@@ -1350,7 +1108,7 @@
       ],
       "id": "harris-health-pasadena",
       "available": true,
-      "requiresSpanish": false,
+      "requiresSpanish": true,
       "weeksOpen": [
         1,
         2,
@@ -1411,7 +1169,7 @@
       ],
       "id": "tch-mobile-clinic-program",
       "available": true,
-      "requiresSpanish": false,
+      "requiresSpanish": true,
       "weeksOpen": [
         1,
         2,
@@ -1459,68 +1217,6 @@
         "6": 1
       },
       "note": "Combined slot for any available doctor at this site — individual doctors are also listed separately below so the coordinator can track per-doctor availability."
-    },
-    {
-      "name": "TCP Westwood — Dr. Stephanie Marton",
-      "category": "BCM Academic Gen Peds Sites",
-      "distance": 13.7,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Stephanie Marton"
-      ],
-      "id": "tcp-westwood--dr-stephanie-marton",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-westwood"
-    },
-    {
-      "name": "TCP Westwood — Dr. Neel Naik",
-      "category": "BCM Academic Gen Peds Sites",
-      "distance": 13.7,
-      "isSubspecialty": false,
-      "isAustin": false,
-      "preceptors": [
-        "Dr. Neel Naik"
-      ],
-      "id": "tcp-westwood--dr-neel-naik",
-      "available": true,
-      "requiresSpanish": false,
-      "weeksOpen": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "capacityByWeek": {
-        "1": 1,
-        "2": 1,
-        "3": 1,
-        "4": 1,
-        "5": 1,
-        "6": 1
-      },
-      "isBackupPreceptor": false,
-      "splitFromId": "tcp-westwood"
     },
     {
       "name": "TCH Rheumatology",

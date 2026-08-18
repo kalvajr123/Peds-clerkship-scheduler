@@ -67,12 +67,56 @@ function mulberry32(seed) {
   };
 }
 
-function assignWeekTemplates(studentIds, rng) {
-  const templates = shuffle(WEEK_TEMPLATES, rng);
+/**
+ * Manual locks can pin timing (which block/week a rotation falls on)
+ * independently of site. Derives, per student, the combined timing
+ * constraint from all of their locks: { phmBlock, communityBlock, pemWeek,
+ * newbornWeek } (block indices 0-2 into WEEK_BLOCKS, weeks are 1-6).
+ */
+function deriveTimingConstraints(locks) {
+  const byStudent = {};
+  for (const lock of locks) {
+    if (lock.timing == null) continue;
+    const c = byStudent[lock.studentId] || {};
+    if (lock.rotationKey === 'PHM') c.phmBlock = lock.timing;
+    else if (lock.rotationKey === 'Community1' || lock.rotationKey === 'Community2') c.communityBlock = lock.timing;
+    else if (lock.rotationKey === 'PEM') c.pemWeek = lock.timing;
+    else if (lock.rotationKey === 'Newborn') c.newbornWeek = lock.timing;
+    byStudent[lock.studentId] = c;
+  }
+  return byStudent;
+}
+
+function templateMatchesConstraints(template, constraints) {
+  if (!constraints) return true;
+  if (constraints.phmBlock != null && template.phmWeeks[0] !== WEEK_BLOCKS[constraints.phmBlock][0]) return false;
+  if (
+    constraints.communityBlock != null &&
+    template.communityWeeks[0] !== WEEK_BLOCKS[constraints.communityBlock][0]
+  ) {
+    return false;
+  }
+  if (constraints.pemWeek != null && template.pemWeek !== constraints.pemWeek) return false;
+  if (constraints.newbornWeek != null && template.newbornWeek !== constraints.newbornWeek) return false;
+  return true;
+}
+
+function assignWeekTemplates(studentIds, rng, timingConstraints) {
+  const shuffledTemplates = shuffle(WEEK_TEMPLATES, rng);
   const order = shuffle(studentIds, rng);
   const byStudent = {};
   order.forEach((id, i) => {
-    byStudent[id] = templates[i % templates.length];
+    const constraints = timingConstraints?.[id];
+    if (constraints) {
+      const valid = shuffledTemplates.filter((t) => templateMatchesConstraints(t, constraints));
+      // If a coordinator locked two contradictory timings (e.g. the same
+      // block for both PHM and Community) no template can satisfy both;
+      // fall back to an unconstrained pick rather than crash. This should
+      // be rare — the Manual Locks UI warns about same-block conflicts.
+      byStudent[id] = valid.length ? valid[i % valid.length] : shuffledTemplates[i % shuffledTemplates.length];
+    } else {
+      byStudent[id] = shuffledTemplates[i % shuffledTemplates.length];
+    }
   });
   return byStudent;
 }
@@ -92,7 +136,7 @@ function weeklyDistancePEM(site) {
   return (site.distancePerDay || 0) * (site.daysPerWeek || 0);
 }
 
-function capacityOf(site, week, rotationType) {
+function capacityOf(site, week, rotationType, usePrimary = false) {
   // Newborn sites use a flat weekly capacity (same every week).
   if (rotationType === 'newborn') {
     return site.capacity == null ? Infinity : site.capacity;
@@ -102,6 +146,12 @@ function capacityOf(site, week, rotationType) {
   // a separate one since an empty weeksOpen already means "closed".)
   if (rotationType === 'community' && !site.available) return 0;
   if (!site.weeksOpen || !site.weeksOpen.includes(week)) return 0;
+  // Some sites (e.g. PHM Main/West Campus) have a lower "primary" capacity
+  // that should fill first, with the gap up to the full capacity used only
+  // as overflow once every site's primary capacity is exhausted.
+  if (usePrimary && site.primaryCapacityByWeek) {
+    return site.primaryCapacityByWeek[week] ?? 0;
+  }
   return site.capacityByWeek?.[week] ?? 0;
 }
 
@@ -154,8 +204,8 @@ class Occupancy {
   }
 }
 
-function hasCapacity(site, week, rotationType, occupancy) {
-  return occupancy.get(rotationType, site.id, week) < capacityOf(site, week, rotationType);
+function hasCapacity(site, week, rotationType, occupancy, usePrimary = false) {
+  return occupancy.get(rotationType, site.id, week) < capacityOf(site, week, rotationType, usePrimary);
 }
 
 // ---------------------------------------------------------------------
@@ -182,18 +232,32 @@ function findSite(pool, id) {
   return pool.find((s) => s.id === id) || null;
 }
 
+// San Antonio (Christus) housing is shared across PHM/Community/PEM — only
+// a limited number of housing spots exist per week regardless of each
+// rotation's own site capacity, so it needs a cross-site check.
+const SAN_ANTONIO_SITE_IDS = { phm: 'phm-christus', pem: 'pem-christus', community: 'christus-community' };
+
+function sanAntonioOccupancy(occupancy, week) {
+  return (
+    occupancy.get('phm', SAN_ANTONIO_SITE_IDS.phm, week) +
+    occupancy.get('pem', SAN_ANTONIO_SITE_IDS.pem, week) +
+    occupancy.get('community', SAN_ANTONIO_SITE_IDS.community, week)
+  );
+}
+
+function sanAntonioHasRoom(occupancy, week, housingCap) {
+  return sanAntonioOccupancy(occupancy, week) < housingCap;
+}
+
 function applyHardPreferences({
   preferences,
   templates,
   sitePools,
   occupancy,
   assignments,
-  locks,
   overflow,
+  housingCap,
 }) {
-  const isLocked = (studentId, rotationKey) =>
-    locks.some((l) => l.studentId === studentId && l.rotationKey === rotationKey);
-
   // Katy / Woodlands (single-rotation categories)
   const simpleCategories = [
     { key: 'katyPHM', rotationKey: 'PHM', siteId: SPECIAL_SITE_IDS.katyPHM, pool: 'phm' },
@@ -211,7 +275,6 @@ function applyHardPreferences({
     const site = findSite(sitePools[cat.pool], cat.siteId);
     if (!site) continue;
     order.forEach((studentId, idx) => {
-      if (isLocked(studentId, cat.rotationKey)) return;
       const a = assignments[studentId];
       if (cat.rotationKey === 'PHM') {
         if (a.phm) return;
@@ -241,12 +304,14 @@ function applyHardPreferences({
   const austinSites = sitePools.community.filter((s) => s.isAustin);
   austinOrder.forEach((studentId, idx) => {
     const a = assignments[studentId];
-    if (a.community[0] && a.community[1]) return;
+    // Austin wants both community weeks at the same site; if either week
+    // is already fixed (e.g. by a manual lock), this student can't cleanly
+    // get the both-weeks Austin placement.
+    if (a.community[0] || a.community[1]) return;
     const weeks = templates[studentId].communityWeeks;
     const site = austinSites.find((s) => weeks.every((w) => hasCapacity(s, w, 'community', occupancy)));
     if (site) {
       weeks.forEach((w, ordinal) => {
-        if (isLocked(studentId, `Community${ordinal + 1}`)) return;
         occupancy.inc('community', site.id, w);
         a.community[ordinal] = { week: w, siteId: site.id, ordinal, locked: true };
       });
@@ -267,11 +332,12 @@ function applyHardPreferences({
 
     const phmSite = findSite(sitePools.phm, SPECIAL_SITE_IDS.christusPHM);
     wantsPHM.forEach((studentId, idx) => {
-      if (isLocked(studentId, 'PHM')) return;
       const a = assignments[studentId];
       if (a.phm || !phmSite) return;
       const weeks = templates[studentId].phmWeeks;
-      const ok = weeks.every((w) => hasCapacity(phmSite, w, 'phm', occupancy));
+      const ok = weeks.every(
+        (w) => hasCapacity(phmSite, w, 'phm', occupancy) && sanAntonioHasRoom(occupancy, w, housingCap)
+      );
       if (ok) {
         weeks.forEach((w) => occupancy.inc('phm', phmSite.id, w));
         a.phm = { weeks, siteId: phmSite.id, locked: true };
@@ -282,11 +348,10 @@ function applyHardPreferences({
 
     const pemSite = findSite(sitePools.pem, SPECIAL_SITE_IDS.christusPEM);
     wantsPEM.forEach((studentId, idx) => {
-      if (isLocked(studentId, 'PEM')) return;
       const a = assignments[studentId];
       if (a.pem || !pemSite) return;
       const week = templates[studentId].pemWeek;
-      if (hasCapacity(pemSite, week, 'pem', occupancy)) {
+      if (hasCapacity(pemSite, week, 'pem', occupancy) && sanAntonioHasRoom(occupancy, week, housingCap)) {
         occupancy.inc('pem', pemSite.id, week);
         a.pem = { week, siteId: pemSite.id, locked: true };
       } else {
@@ -296,12 +361,15 @@ function applyHardPreferences({
 
     wantsCommunity.forEach((studentId, idx) => {
       const a = assignments[studentId];
-      if (!christusCommunitySite || (a.community[0] && a.community[1])) return;
+      if (!christusCommunitySite || a.community[0] || a.community[1]) return;
       const weeks = templates[studentId].communityWeeks;
-      const ok = weeks.every((w) => hasCapacity(christusCommunitySite, w, 'community', occupancy));
+      const ok = weeks.every(
+        (w) =>
+          hasCapacity(christusCommunitySite, w, 'community', occupancy) &&
+          sanAntonioHasRoom(occupancy, w, housingCap)
+      );
       if (ok) {
         weeks.forEach((w, ordinal) => {
-          if (isLocked(studentId, `Community${ordinal + 1}`)) return;
           occupancy.inc('community', christusCommunitySite.id, w);
           a.community[ordinal] = { week: w, siteId: christusCommunitySite.id, ordinal, locked: true };
         });
@@ -338,6 +406,11 @@ function applyManualLocks({ locks, templates, sitePools, occupancy, assignments 
       const week = tmpl.communityWeeks[ordinal];
       occupancy.inc('community', site.id, week);
       a.community[ordinal] = { week, siteId: site.id, ordinal, locked: true };
+    } else if (lock.rotationKey === 'Newborn') {
+      const site = findSite(sitePools.newborn, lock.siteId);
+      if (!site || a.newborn) continue;
+      occupancy.inc('newborn', site.id, tmpl.newbornWeek);
+      a.newborn = { week: tmpl.newbornWeek, siteId: site.id, locked: true };
     }
   }
 }
@@ -354,14 +427,17 @@ function studentUsedSubspecialty(a) {
   return a.community.some((c) => c && c.isSubspecialty);
 }
 
-function greedyFillPHM({ studentIds, templates, sitePools, occupancy, assignments, mileage, rng }) {
-  let open = studentIds.filter((id) => !assignments[id].phm);
+function greedyFillPHMPass({ open, templates, sitePools, occupancy, assignments, mileage, rng, usePrimary }) {
+  const stillOpen = [];
   while (open.length) {
     open = shuffle(open, rng).sort((a, b) => currentTotal(mileage, a) - currentTotal(mileage, b));
     const studentId = open[0];
     const weeks = templates[studentId].phmWeeks;
-    const eligible = sitePools.phm.filter((site) => weeks.every((w) => hasCapacity(site, w, 'phm', occupancy)));
+    const eligible = sitePools.phm.filter((site) =>
+      weeks.every((w) => hasCapacity(site, w, 'phm', occupancy, usePrimary))
+    );
     if (!eligible.length) {
+      stillOpen.push(studentId);
       open = open.slice(1);
       continue;
     }
@@ -372,24 +448,76 @@ function greedyFillPHM({ studentIds, templates, sitePools, occupancy, assignment
     mileage[studentId] = currentTotal(mileage, studentId) + site.weeklyDistance * weeks.length;
     open = open.slice(1);
   }
+  return stillOpen;
 }
 
+/**
+ * Two-pass fill: first up to each site's "primary" capacity (e.g. Main=8,
+ * West Campus=2), cheapest-first as usual; only students that still can't
+ * be placed move on to a second pass using each site's full capacity (e.g.
+ * Main up to 10, WC up to 3) — so overflow capacity is only used once every
+ * site's preferred capacity is exhausted.
+ */
+function greedyFillPHM({ studentIds, templates, sitePools, occupancy, assignments, mileage, rng }) {
+  const open = studentIds.filter((id) => !assignments[id].phm);
+  const stillOpen = greedyFillPHMPass({
+    open,
+    templates,
+    sitePools,
+    occupancy,
+    assignments,
+    mileage,
+    rng,
+    usePrimary: true,
+  });
+  if (stillOpen.length) {
+    greedyFillPHMPass({
+      open: stillOpen,
+      templates,
+      sitePools,
+      occupancy,
+      assignments,
+      mileage,
+      rng,
+      usePrimary: false,
+    });
+  }
+}
+
+/**
+ * PEM deliberately does NOT fill cheapest-first: the coordinator wants
+ * students spread round-robin across TCH-A -> TCH-B -> Katy -> Woodlands
+ * (one student per site per pass) to avoid crowding TCH, even though pure
+ * mileage-minimization would cluster everyone at TCH. The cycle resets
+ * per week (sitePools.pem is in that exact priority order after opt-in
+ * Christus is filtered out by autoFillPools).
+ */
 function greedyFillPEM({ studentIds, templates, sitePools, occupancy, assignments, mileage, rng }) {
   let open = studentIds.filter((id) => !assignments[id].pem);
+  const cyclePos = {}; // week -> next cycle index into sitePools.pem
+  const n = sitePools.pem.length;
   while (open.length) {
     open = shuffle(open, rng).sort((a, b) => currentTotal(mileage, a) - currentTotal(mileage, b));
     const studentId = open[0];
     const week = templates[studentId].pemWeek;
-    const eligible = sitePools.pem.filter((site) => hasCapacity(site, week, 'pem', occupancy));
-    if (!eligible.length) {
+    const start = cyclePos[week] ?? 0;
+    let foundIdx = -1;
+    for (let i = 0; i < n; i++) {
+      const idx = (start + i) % n;
+      if (hasCapacity(sitePools.pem[idx], week, 'pem', occupancy)) {
+        foundIdx = idx;
+        break;
+      }
+    }
+    if (foundIdx === -1) {
       open = open.slice(1);
       continue;
     }
-    eligible.sort((a, b) => a.weeklyDistance - b.weeklyDistance);
-    const site = eligible[0];
+    const site = sitePools.pem[foundIdx];
     occupancy.inc('pem', site.id, week);
     assignments[studentId].pem = { week, siteId: site.id, locked: false };
     mileage[studentId] = currentTotal(mileage, studentId) + site.weeklyDistance;
+    cyclePos[week] = (foundIdx + 1) % n;
     open = open.slice(1);
   }
 }
@@ -642,8 +770,9 @@ function localSearchCommunity({ studentIds, sitePools, occupancy, assignments, m
 // Single restart
 // ---------------------------------------------------------------------
 
-function runOneAttempt({ studentIds, preferences, locks, sitePools, rng }) {
-  const templates = assignWeekTemplates(studentIds, rng);
+function runOneAttempt({ studentIds, preferences, locks, sitePools, rng, housingCap }) {
+  const timingConstraints = deriveTimingConstraints(locks);
+  const templates = assignWeekTemplates(studentIds, rng, timingConstraints);
   const occupancy = new Occupancy();
   const assignments = {};
   const mileage = {};
@@ -654,7 +783,7 @@ function runOneAttempt({ studentIds, preferences, locks, sitePools, rng }) {
   const overflow = [];
 
   applyManualLocks({ locks, templates, sitePools, occupancy, assignments });
-  applyHardPreferences({ preferences, templates, sitePools, occupancy, assignments, locks, overflow });
+  applyHardPreferences({ preferences, templates, sitePools, occupancy, assignments, overflow, housingCap });
 
   // Seed mileage totals from locked/hard-pref assignments already made.
   studentIds.forEach((id) => {
@@ -684,11 +813,15 @@ function runOneAttempt({ studentIds, preferences, locks, sitePools, rng }) {
   greedyFillCommunity({ studentIds, templates, sitePools: autoPools, occupancy, assignments, mileage, preferences, rng });
 
   localSearchPHM({ studentIds, sitePools, occupancy, assignments, mileage });
-  localSearchPEM({ studentIds, sitePools, occupancy, assignments, mileage });
+  // PEM intentionally skips local-search balancing: swapping students
+  // toward lower mileage would just re-cluster them at cheap sites (TCH),
+  // undoing the round-robin spread greedyFillPEM was asked to produce.
   localSearchCommunity({ studentIds, sitePools, occupancy, assignments, mileage, preferences });
 
-  // Newborn: whatever week is left, assign lowest-loaded available newborn site.
+  // Newborn: whatever week is left, assign lowest-loaded available newborn
+  // site (skip anyone already fixed by a manual lock with a site).
   studentIds.forEach((id) => {
+    if (assignments[id].newborn) return;
     const week = templates[id].newbornWeek;
     const eligible = sitePools.newborn.filter((site) => hasCapacity(site, week, 'newborn', occupancy));
     const site = eligible[0] || sitePools.newborn[0];
@@ -750,13 +883,14 @@ export async function runScheduler({
 }) {
   const studentIds = roster.map((s) => s.id);
   const sitePools = normalizeSites(sitesState);
+  const housingCap = sitesState.christusHousingCap ?? 3;
 
   let best = null;
   const chunkSize = 10;
 
   for (let i = 0; i < restarts; i++) {
     const rng = mulberry32(Date.now() % 1e9 + i * 7919);
-    const attempt = runOneAttempt({ studentIds, preferences, locks, sitePools, rng });
+    const attempt = runOneAttempt({ studentIds, preferences, locks, sitePools, rng, housingCap });
     if (isBetterAttempt(attempt, best)) {
       best = attempt;
     }
