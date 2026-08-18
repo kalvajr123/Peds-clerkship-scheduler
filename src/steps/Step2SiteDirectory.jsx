@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react';
 import { useAppState, useAppDispatch } from '../state/AppContext';
 import { validateSiteCapacity, WEEK_BLOCKS } from '../lib/scheduler';
 
-function NumberField({ value, onChange, min = 0, style }) {
+function NumberField({ value, onChange, min = 0, style, id, title }) {
   return (
     <input
+      id={id}
+      title={title}
       type="number"
       min={min}
       value={value ?? ''}
@@ -37,8 +39,9 @@ function WeekOpenCapCell({ site, week, onToggle, onCapacity, disabled }) {
 }
 
 /** One open/capacity cell for a whole 2-week block (used by the PHM table). */
-function BlockOpenCapCell({ site, block, onToggleBlock, onCapacityBlock }) {
+function BlockOpenCapCell({ site, block, onToggleBlock, onCapacityBlock, onPrimaryCapacityBlock }) {
   const bothOpen = block.every((w) => site.weeksOpen.includes(w));
+  const hasPrimary = !!site.primaryCapacityByWeek;
   return (
     <td>
       <div className="row" style={{ gap: 4 }}>
@@ -48,11 +51,29 @@ function BlockOpenCapCell({ site, block, onToggleBlock, onCapacityBlock }) {
           onChange={() => onToggleBlock(site, block)}
           title={`Open for weeks ${block.join('-')}?`}
         />
-        <NumberField
-          value={site.capacityByWeek[block[0]] ?? 0}
-          onChange={(v) => onCapacityBlock(site, block, v ?? 0)}
-          style={{ width: 44 }}
-        />
+        {hasPrimary ? (
+          <>
+            <NumberField
+              value={site.primaryCapacityByWeek[block[0]] ?? 0}
+              onChange={(v) => onPrimaryCapacityBlock(site, block, v ?? 0)}
+              style={{ width: 44 }}
+              title="Primary capacity (filled first)"
+            />
+            <span className="muted">/</span>
+            <NumberField
+              value={site.capacityByWeek[block[0]] ?? 0}
+              onChange={(v) => onCapacityBlock(site, block, v ?? 0)}
+              style={{ width: 44 }}
+              title="Max capacity (overflow, used only if needed)"
+            />
+          </>
+        ) : (
+          <NumberField
+            value={site.capacityByWeek[block[0]] ?? 0}
+            onChange={(v) => onCapacityBlock(site, block, v ?? 0)}
+            style={{ width: 44 }}
+          />
+        )}
       </div>
     </td>
   );
@@ -79,6 +100,14 @@ function PHMTable() {
     update(site.id, { capacityByWeek });
   };
 
+  const setPrimaryBlockCapacity = (site, block, value) => {
+    const primaryCapacityByWeek = { ...site.primaryCapacityByWeek };
+    block.forEach((w) => {
+      primaryCapacityByWeek[w] = value;
+    });
+    update(site.id, { primaryCapacityByWeek });
+  };
+
   return (
     <div className="table-scroll">
       <table>
@@ -88,7 +117,7 @@ function PHMTable() {
             <th>Distance / day</th>
             <th>Days / week</th>
             {WEEK_BLOCKS.map((block) => (
-              <th key={block.join('-')}>Weeks {block.join('-')} open / cap</th>
+              <th key={block.join('-')}>Weeks {block.join('-')} open / primary / max cap</th>
             ))}
           </tr>
         </thead>
@@ -112,6 +141,7 @@ function PHMTable() {
                   block={block}
                   onToggleBlock={toggleBlock}
                   onCapacityBlock={setBlockCapacity}
+                  onPrimaryCapacityBlock={setPrimaryBlockCapacity}
                 />
               ))}
             </tr>
@@ -222,7 +252,7 @@ function CommunitySiteRow({ s, isSubRow, update, toggleWeek, setCapacity, onRemo
         />
       </td>
       <td className={isSubRow ? 'community-subrow__name' : undefined}>
-        {isSubRow ? `↳ ${s.preceptors?.[0] || s.name}` : s.name}
+        {isSubRow ? `↳ ${s.preceptors?.length ? s.preceptors.join(' & ') : s.name}` : s.name}
         {!isSubRow && s.preceptors?.length > 0 && <div className="muted">{s.preceptors.join('; ')}</div>}
       </td>
       <td>{s.category}</td>
@@ -502,6 +532,23 @@ export default function Step2SiteDirectory() {
       <div className="panel">
         <h2>PEM sites</h2>
         <PEMTable />
+      </div>
+      <div className="panel">
+        <h2>San Antonio (Christus) shared housing</h2>
+        <p className="muted">
+          PHM, Community, and PEM at Christus each have their own site capacity above, but they all
+          draw from the same limited housing in San Antonio. This cap limits the combined total
+          across all three, per week, on top of each site's own capacity.
+        </p>
+        <div className="field">
+          <label htmlFor="christus-housing-cap">Housing spots available per week</label>
+          <NumberField
+            id="christus-housing-cap"
+            value={state.sites.christusHousingCap ?? 3}
+            onChange={(v) => dispatch({ type: 'SET_CHRISTUS_HOUSING_CAP', cap: v ?? 0 })}
+            style={{ width: 64 }}
+          />
+        </div>
       </div>
       <div className="panel">
         <h2>Newborn sites</h2>
