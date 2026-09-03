@@ -1,0 +1,186 @@
+openapi: 3.0.1
+info:
+  title: Clerkship Scheduler Balancer
+  description: >
+    Standalone port of the pediatric clerkship scheduler's mileage-balancing
+    algorithm, for use as a PowerApps custom connector backend.
+  version: "1.0.0"
+servers:
+  - url: https://REPLACE_WITH_YOUR_FUNCTION_APP.azurewebsites.net/api
+security:
+  - functionKey: []
+paths:
+  /GenerateSchedule:
+    post:
+      summary: Run the balancing algorithm and return a full schedule
+      operationId: GenerateSchedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roster, sitesState]
+              properties:
+                roster:
+                  type: array
+                  description: Anonymized student list, e.g. [{"id":"S1","name":"Jane Doe"}].
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                sitesState:
+                  type: object
+                  description: >
+                    { phm: [...], pem: [...], newborn: [...], community: [...],
+                    christusHousingCap: number }. See README.md for the full
+                    per-site field shape.
+                  additionalProperties: true
+                preferences:
+                  type: object
+                  description: >
+                    Keyed by category (spanish, christus, austin, katyPHM,
+                    katyPEM, woodlandsPEM), each { order: [studentId, ...] }.
+                    christus additionally carries entries: { studentId:
+                    ["PHM"|"Community"|"PEM", ...] }.
+                  additionalProperties: true
+                locks:
+                  type: array
+                  description: Manual lock overrides, applied before optimization.
+                  items:
+                    type: object
+                    properties:
+                      studentId:
+                        type: string
+                      rotationKey:
+                        type: string
+                        enum: [PHM, PEM, Community1, Community2, Newborn]
+                      siteId:
+                        type: string
+                      timing:
+                        type: integer
+                        nullable: true
+                restarts:
+                  type: integer
+                  default: 200
+                  description: Random-restart count (capped server-side at 2000).
+      responses:
+        "200":
+          description: The best schedule found across all restarts.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Malformed request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Scheduler failed while running.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /RecomputeStats:
+    post:
+      summary: Recompute rank/z-score after a manual grid override
+      operationId: RecomputeStats
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mileage]
+              properties:
+                mileage:
+                  type: object
+                  description: studentId -> total mileage.
+                  additionalProperties:
+                    type: number
+                studentIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Updated mean/std/rank/zScore.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Malformed request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /ValidateCapacity:
+    post:
+      summary: Aggregate site-capacity sanity checks
+      operationId: ValidateCapacity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sitesState, rosterSize]
+              properties:
+                sitesState:
+                  type: object
+                  additionalProperties: true
+                rosterSize:
+                  type: integer
+      responses:
+        "200":
+          description: List of human-readable warning strings (empty if none).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: Malformed request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /Health:
+    get:
+      summary: Liveness check (anonymous, no function key required)
+      operationId: Health
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+components:
+  securitySchemes:
+    functionKey:
+      type: apiKey
+      in: query
+      name: code
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

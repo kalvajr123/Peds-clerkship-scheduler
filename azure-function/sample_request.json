@@ -1,0 +1,157 @@
+{
+  "roster": [
+    { "id": "S1", "name": "Alice Nguyen" },
+    { "id": "S2", "name": "Brian Ortiz" },
+    { "id": "S3", "name": "Carmen Diaz" },
+    { "id": "S4", "name": "Devon Lee" },
+    { "id": "S5", "name": "Elena Petrova" },
+    { "id": "S6", "name": "Farid Haidari" }
+  ],
+  "sitesState": {
+    "christusHousingCap": 3,
+    "phm": [
+      {
+        "id": "phm-main",
+        "name": "PHM Main Campus",
+        "distancePerDay": 0,
+        "daysPerWeek": 6,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4, "6": 4 },
+        "primaryCapacityByWeek": { "1": 3, "2": 3, "3": 3, "4": 3, "5": 3, "6": 3 }
+      },
+      {
+        "id": "phm-wc",
+        "name": "PHM West Campus (Katy)",
+        "distancePerDay": 25,
+        "daysPerWeek": 5,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2 },
+        "primaryCapacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      },
+      {
+        "id": "phm-christus",
+        "name": "PHM Christus Children's (San Antonio)",
+        "distancePerDay": 0,
+        "daysPerWeek": 6,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      }
+    ],
+    "pem": [
+      {
+        "id": "pem-main-a",
+        "name": "PEM TCH Main Campus - A",
+        "distancePerDay": 0,
+        "daysPerWeek": 5,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2 }
+      },
+      {
+        "id": "pem-wc",
+        "name": "PEM West Campus (Katy)",
+        "distancePerDay": 25,
+        "daysAtSite": 4,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      },
+      {
+        "id": "pem-woodlands",
+        "name": "PEM Woodlands",
+        "distancePerDay": 39,
+        "daysAtSite": 4,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      },
+      {
+        "id": "pem-christus",
+        "name": "PEM Christus Children's (San Antonio)",
+        "distancePerDay": 0,
+        "daysAtSite": 5,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      }
+    ],
+    "newborn": [
+      { "id": "newborn-tch", "name": "TCH Newborn", "distancePerDay": 0, "capacity": 3 },
+      { "id": "newborn-bt", "name": "Ben Taub Newborn", "distancePerDay": 0, "capacity": 3 }
+    ],
+    "community": [
+      {
+        "id": "tcp-heights",
+        "name": "TCP Heights",
+        "distance": 7.3,
+        "available": true,
+        "isSubspecialty": false,
+        "isAustin": false,
+        "requiresSpanish": false,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2 }
+      },
+      {
+        "id": "tcp-katy",
+        "name": "TCP Katy",
+        "distance": 27.2,
+        "available": true,
+        "isSubspecialty": false,
+        "isAustin": false,
+        "requiresSpanish": false,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2 }
+      },
+      {
+        "id": "cypress-health-center",
+        "name": "Cypress Health Center",
+        "distance": 25,
+        "available": true,
+        "isSubspecialty": false,
+        "isAustin": false,
+        "requiresSpanish": true,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      },
+      {
+        "id": "tch-rheumatology",
+        "name": "TCH Rheumatology",
+        "distance": 0,
+        "available": true,
+        "isSubspecialty": true,
+        "isAustin": false,
+        "requiresSpanish": false,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      },
+      {
+        "id": "tcp-beansprout-austin",
+        "name": "TCP Beansprout (Dripping Springs, TX)",
+        "distance": 0,
+        "available": true,
+        "isSubspecialty": false,
+        "isAustin": true,
+        "requiresSpanish": false,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      },
+      {
+        "id": "christus-community",
+        "name": "Christus Children's (San Antonio) - Community",
+        "distance": 0,
+        "available": true,
+        "isSubspecialty": false,
+        "isAustin": false,
+        "requiresSpanish": false,
+        "weeksOpen": [1, 2, 3, 4, 5, 6],
+        "capacityByWeek": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1, "6": 1 }
+      }
+    ]
+  },
+  "preferences": {
+    "spanish": { "order": ["S3"] },
+    "christus": { "order": ["S6"], "entries": { "S6": ["PHM"] } },
+    "austin": { "order": ["S2"] },
+    "katyPHM": { "order": [] },
+    "katyPEM": { "order": [] },
+    "woodlandsPEM": { "order": [] }
+  },
+  "locks": [],
+  "restarts": 150
+}

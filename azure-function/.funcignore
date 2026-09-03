@@ -1,0 +1,14 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.git*
+.vscode/
+local.settings.json
+tests/
+sample_request.json
+sample_recompute_request.json
+sample_validate_request.json
+README.md
+openapi.yaml
+.pytest_cache/
